@@ -11,7 +11,7 @@
     ]
   },
   "session": {
-    "secret": "appichaps-session-secret-source"
+    "secret": "odin-session-secret-source"
   },
   "servers": {
     "http": {
@@ -19,7 +19,7 @@
     },
     "db": {
       "host": "127.0.0.1",
-      "database": "appichaps"
+      "database": "odin"
     }
   }
 }

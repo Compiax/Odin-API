@@ -1,0 +1,25 @@
+{
+  "cors": {
+    "origin": "https://dev.odin.com",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS"
+    ]
+  },
+  "session": {
+    "secret": "odin-session-secret-dev"
+  },
+  "servers": {
+    "http": {
+      "port": "3000"
+    },
+    "db": {
+      "host": "odin-db-dev",
+      "database": "odin"
+    }
+  }
+}

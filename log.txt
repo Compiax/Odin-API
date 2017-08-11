@@ -1,0 +1,266 @@
+Sending build context to Docker daemon  109.1MB
+Step 1/11 : FROM library/node:7.4.0-slim
+ ---> fbe66d86b260
+Step 2/11 : MAINTAINER Compiax (Pty) Ltd. <admin@compiax.io>
+ ---> Using cache
+ ---> 198f4fa05444
+Step 3/11 : WORKDIR /home/node/urlshortener-api
+ ---> Using cache
+ ---> 9fe0cc0e32c2
+Step 4/11 : COPY package.json .
+ ---> Using cache
+ ---> 21cd455ac269
+Step 5/11 : RUN chown -R node .
+ ---> Using cache
+ ---> 638d58a38334
+Step 6/11 : RUN npm install -g   mocha   nodemon
+ ---> Using cache
+ ---> 9599f047dcda
+Step 7/11 : USER node
+ ---> Using cache
+ ---> e91c3592fbcd
+Step 8/11 : RUN npm install && npm cache clean
+ ---> Using cache
+ ---> b3eacecd8707
+Step 9/11 : COPY . .
+ ---> 55b2e0303e64
+Removing intermediate container 4af11560b477
+Step 10/11 : EXPOSE 3000
+ ---> Running in 45d6307b7208
+ ---> 553a143f8e52
+Removing intermediate container 45d6307b7208
+Step 11/11 : CMD npm start
+ ---> Running in 7d64aa6fe24a
+ ---> 2bb13bf81bf8
+Removing intermediate container 7d64aa6fe24a
+Successfully built 2bb13bf81bf8
+Successfully tagged compiax/urlshortener-api:source-latest
+docker: Error response from daemon: Conflict. The container name "/urlshortener-db-source" is already in use by container "d3efba835db5bb35ff6f83a13ea5ed01846ea06d9d55854586b73c241e965973". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+[37;40mnpm[0m [0m[32minfo[0m [0m[35mit worked if it ends with[0m ok
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35musing[0m npm@4.0.5
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35musing[0m node@v7.4.0
+[0m[?25l[[90m..................[0m] - : [32minfo[0m [35musing[0m node@v7.4.0[K[K[?25h[37;40mnpm[0m [0m[32minfo[0m [0m[35mlifecycle[0m propertysync-api@0.0.0~prestart: propertysync-api@0.0.0
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35mlifecycle[0m propertysync-api@0.0.0~start: propertysync-api@0.0.0
+[0m
+> propertysync-api@0.0.0 start /home/node/urlshortener-api
+> nodemon
+
+[33m[nodemon] 1.11.0[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching: *.*[39m
+[32m[nodemon] starting `node index.js`[39m
+  [36;1murl-api:resolve [0mExporting generateUrl function [36m+0ms[0m
+  [33;1murl-api:routes [0mAdding routes [33m+4ms[0m
+  [33;1murl-api:routes [0mResolve router exported [33m+5ms[0m
+  [32;1murl-api:controllers:create [0mExporting generateUrl function [32m+2ms[0m
+  [34;1murl-api:routes:generate [0mAdding save routes [34m+0ms[0m
+  [34;1murl-api:routes:generate [0mResolve router exported [34m+0ms[0m
+  [34;1murl-api:controllers:details [0mExporting generateUrl function [34m+1ms[0m
+  [33;1murl-api:routes:details [0mAdding details routes [33m+0ms[0m
+  [33;1murl-api:routes:details [0mDetails router exported [33m+1ms[0m
+  [33;1murl-api:routes [0mAdding routes [33m+0ms[0m
+  [33;1murl-api:routes [0mMain router exported [33m+0ms[0m
+  [32;1murl-api:core [0mCore exported [32m+22ms[0m
+  [33;1murl-api [0mInitialising URLSHortenerAPI [33m+0ms[0m
+  [32;1murl-api:core [0mDumping config: [32m+0ms[0m
+  [32;1murl-api:core [0mConfig { cors: { origin: [32m'*'[39m, methods: [ [32m'GET'[39m, [32m'POST'[39m, [32m'PUT'[39m, [32m'PATCH'[39m, [32m'DELETE'[39m, [32m'OPTIONS'[39m ] }, session: { secret: [32m'propertysync-session-secret-source'[39m }, servers: { http: { port: [32m'3000'[39m }, db: { host: [32m'urlshortener-db-source'[39m, database: [32m'urlshortener'[39m } } } [32m+0ms[0m
+  [32;1murl-api:core [0mCreating app [32m+6ms[0m
+  [35;1murl-api:core:app [0mInitialising environment variables [35m+0ms[0m
+  [35;1murl-api:core:app [0mConnecting to mongo database [35m+0ms[0m
+  [35;1murl-api:core:app [0mCreating application [35m+33ms[0m
+  [35;1murl-api:core:app [0mAdding body-parser [35m+3ms[0m
+  [35;1murl-api:core:app [0mAdding routes [35m+24ms[0m
+  [32;1murl-api:core [0mCreating server [32m+0ms[0m
+(node:32) DeprecationWarning: `open()` is deprecated in mongoose >= 4.11.0, use `openUri()` instead, or set the `useMongoClient` option if using `connect()` or `createConnection()`. See http://mongoosejs.com/docs/connections.html#use-mongo-client
+  [32;1murl-api:core [0mListening on http://localhost:3000 [32m+10ms[0m
+  [35;1murl-api:helpers:validation [0mvalidateResolveURLRequest [35m+7s[0m
+  [35;1murl-api:helpers:validation [0m{ fields: { url: [32m'url,viewLimit,expiryDate,history'[39m } } [35m+0ms[0m
+  [36;1murl-api:resolve [0m{ _id: [32m'2dce25'[39m,
+  [36;1murl-api:resolve [0m  password: [32m'froglegs'[39m,
+  [36;1murl-api:resolve [0m  url: [32m'www.google.com'[39m,
+  [36;1murl-api:resolve [0m  allowedEmails: [ [32m'jasonvhattum@gmail.com'[39m ],
+  [36;1murl-api:resolve [0m  history: 
+  [36;1murl-api:resolve [0m   [ { date: [35m2017-08-01T10:58:57.775Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T10:59:15.412Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T10:59:23.004Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:00:03.525Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:00:08.034Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:00:17.864Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:01:08.089Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:13:22.192Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:16:59.298Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:17:05.663Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:18:53.628Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:19:04.255Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:39:54.434Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T11:40:33.351Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T12:30:25.851Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T12:32:09.881Z[39m, ip: [32m'::ffff:172.17.0.1'[39m },
+  [36;1murl-api:resolve [0m     { date: [35m2017-08-01T12:32:12.022Z[39m, ip: [32m'::ffff:172.17.0.1'[39m } ],
+  [36;1murl-api:resolve [0m  views: { limit: [33m30[39m, count: [33m17[39m },
+  [36;1murl-api:resolve [0m  timestamps: 
+  [36;1murl-api:resolve [0m   { expires: [35m2017-08-31T00:00:00.000Z[39m,
+  [36;1murl-api:resolve [0m     created: [35m2017-08-01T10:57:56.450Z[39m } } [36m+18ms[0m
+  [36;1murl-api:resolve [0mFound url [36m+3ms[0m
+^C[37;40mnpm[0m [0m[32minfo[0m [0m[35mlifecycle[0m propertysync-api@0.0.0~poststart: propertysync-api@0.0.0
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35mok[0m 
+[0mSending build context to Docker daemon  109.1MB
+Step 1/11 : FROM library/node:7.4.0-slim
+ ---> fbe66d86b260
+Step 2/11 : MAINTAINER Compiax (Pty) Ltd. <admin@compiax.io>
+ ---> Using cache
+ ---> 198f4fa05444
+Step 3/11 : WORKDIR /home/node/urlshortener-api
+ ---> Using cache
+ ---> 9fe0cc0e32c2
+Step 4/11 : COPY package.json .
+ ---> Using cache
+ ---> 21cd455ac269
+Step 5/11 : RUN chown -R node .
+ ---> Using cache
+ ---> 638d58a38334
+Step 6/11 : RUN npm install -g   mocha   nodemon
+ ---> Using cache
+ ---> 9599f047dcda
+Step 7/11 : USER node
+ ---> Using cache
+ ---> e91c3592fbcd
+Step 8/11 : RUN npm install && npm cache clean
+ ---> Using cache
+ ---> b3eacecd8707
+Step 9/11 : COPY . .
+ ---> Using cache
+ ---> 421c6c151557
+Step 10/11 : EXPOSE 3000
+ ---> Using cache
+ ---> b7b8b76f62fb
+Step 11/11 : CMD npm start
+ ---> Using cache
+ ---> 8534bb719729
+Successfully built 8534bb719729
+Successfully tagged compiax/urlshortener-api:source-latest
+docker: Error response from daemon: Conflict. The container name "/urlshortener-db-source" is already in use by container "d3efba835db5bb35ff6f83a13ea5ed01846ea06d9d55854586b73c241e965973". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+[37;40mnpm[0m [0m[32minfo[0m [0m[35mit worked if it ends with[0m ok
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35musing[0m npm@4.0.5
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35musing[0m node@v7.4.0
+[0m[?25l[[90m..................[0m] - : [32minfo[0m [35musing[0m node@v7.4.0[K[K[?25h[37;40mnpm[0m [0m[32minfo[0m [0m[35mlifecycle[0m propertysync-api@0.0.0~prestart: propertysync-api@0.0.0
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35mlifecycle[0m propertysync-api@0.0.0~start: propertysync-api@0.0.0
+[0m
+> propertysync-api@0.0.0 start /home/node/urlshortener-api
+> nodemon
+
+[33m[nodemon] 1.11.0[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching: *.*[39m
+[32m[nodemon] starting `node index.js`[39m
+Tue, 01 Aug 2017 12:43:25 GMT url-api:resolve Exporting generateUrl function
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes Adding routes
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes Resolve router exported
+Tue, 01 Aug 2017 12:43:25 GMT url-api:controllers:create Exporting generateUrl function
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes:generate Adding save routes
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes:generate Resolve router exported
+Tue, 01 Aug 2017 12:43:25 GMT url-api:controllers:details Exporting generateUrl function
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes:details Adding details routes
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes:details Details router exported
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes Adding routes
+Tue, 01 Aug 2017 12:43:25 GMT url-api:routes Main router exported
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core Core exported
+Tue, 01 Aug 2017 12:43:25 GMT url-api Initialising URLSHortenerAPI
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core Dumping config:
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core Config { cors: { origin: '*', methods: [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS' ] }, session: { secret: 'propertysync-session-secret-source' }, servers: { http: { port: '3000' }, db: { host: 'urlshortener-db-source', database: 'urlshortener' } } }
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core Creating app
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core:app Initialising environment variables
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core:app Connecting to mongo database
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core:app Creating application
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core:app Adding body-parser
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core:app Adding routes
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core Creating server
+(node:32) DeprecationWarning: `open()` is deprecated in mongoose >= 4.11.0, use `openUri()` instead, or set the `useMongoClient` option if using `connect()` or `createConnection()`. See http://mongoosejs.com/docs/connections.html#use-mongo-client
+Tue, 01 Aug 2017 12:43:25 GMT url-api:core Listening on http://localhost:3000
+Tue, 01 Aug 2017 12:44:40 GMT url-api:helpers:validation validateResolveURLRequest
+Tue, 01 Aug 2017 12:44:40 GMT url-api:helpers:validation { fields: { url: 'url,viewLimit,expiryDate,history' } }
+Tue, 01 Aug 2017 12:44:40 GMT url-api:resolve { _id: '2dce25',
+  password: 'froglegs',
+  url: 'www.google.com',
+  allowedEmails: [ 'jasonvhattum@gmail.com' ],
+  history: 
+   [ { date: 2017-08-01T10:58:57.775Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T10:59:15.412Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T10:59:23.004Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:00:03.525Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:00:08.034Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:00:17.864Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:01:08.089Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:13:22.192Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:16:59.298Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:17:05.663Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:18:53.628Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:19:04.255Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:39:54.434Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T11:40:33.351Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T12:30:25.851Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T12:32:09.881Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T12:32:12.022Z, ip: '::ffff:172.17.0.1' },
+     { date: 2017-08-01T12:39:46.567Z, ip: '::ffff:172.17.0.1' } ],
+  views: { limit: 30, count: 18 },
+  timestamps: 
+   { expires: 2017-08-31T00:00:00.000Z,
+     created: 2017-08-01T10:57:56.450Z } }
+Tue, 01 Aug 2017 12:44:40 GMT url-api:resolve Found url
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Tue, 01 Aug 2017 12:49:17 GMT url-api:resolve Exporting generateUrl function
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes Adding routes
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes Resolve router exported
+Tue, 01 Aug 2017 12:49:17 GMT url-api:controllers:create Exporting generateUrl function
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes:generate Adding save routes
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes:generate Resolve router exported
+Tue, 01 Aug 2017 12:49:17 GMT url-api:controllers:details Exporting generateUrl function
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes:details Adding details routes
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes:details Details router exported
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes Adding routes
+Tue, 01 Aug 2017 12:49:17 GMT url-api:routes Main router exported
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core Core exported
+Tue, 01 Aug 2017 12:49:17 GMT url-api Initialising URLSHortenerAPI
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core Dumping config:
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core Config { cors: { origin: '*', methods: [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS' ] }, session: { secret: 'propertysync-session-secret-source' }, servers: { http: { port: '3000' }, db: { host: 'urlshortener-db-source', database: 'urlshortener' } } }
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core Creating app
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core:app Initialising environment variables
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core:app Connecting to mongo database
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core:app Creating application
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core:app Adding body-parser
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core:app Adding routes
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core Creating server
+(node:45) DeprecationWarning: `open()` is deprecated in mongoose >= 4.11.0, use `openUri()` instead, or set the `useMongoClient` option if using `connect()` or `createConnection()`. See http://mongoosejs.com/docs/connections.html#use-mongo-client
+Tue, 01 Aug 2017 12:49:17 GMT url-api:core Listening on http://localhost:3000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Tue, 01 Aug 2017 12:50:58 GMT url-api:resolve Exporting generateUrl function
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes Adding routes
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes Resolve router exported
+Tue, 01 Aug 2017 12:50:58 GMT url-api:controllers:create Exporting generateUrl function
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes:generate Adding save routes
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes:generate Resolve router exported
+Tue, 01 Aug 2017 12:50:58 GMT url-api:controllers:details Exporting generateUrl function
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes:details Adding details routes
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes:details Details router exported
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes Adding routes
+Tue, 01 Aug 2017 12:50:58 GMT url-api:routes Main router exported
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core Core exported
+Tue, 01 Aug 2017 12:50:59 GMT url-api Initialising URLSHortenerAPI
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core Dumping config:
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core Config { cors: { origin: '*', methods: [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS' ] }, session: { secret: 'propertysync-session-secret-source' }, servers: { http: { port: '3000' }, db: { host: 'urlshortener-db-source', database: 'urlshortener' } } }
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core Creating app
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core:app Initialising environment variables
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core:app Connecting to mongo database
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core:app Creating application
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core:app Adding body-parser
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core:app Adding routes
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core Creating server
+(node:58) DeprecationWarning: `open()` is deprecated in mongoose >= 4.11.0, use `openUri()` instead, or set the `useMongoClient` option if using `connect()` or `createConnection()`. See http://mongoosejs.com/docs/connections.html#use-mongo-client
+Tue, 01 Aug 2017 12:50:59 GMT url-api:core Listening on http://localhost:3000
+^C[37;40mnpm[0m [0m[32minfo[0m [0m[35mlifecycle[0m propertysync-api@0.0.0~poststart: propertysync-api@0.0.0
+[0m[37;40mnpm[0m [0m[32minfo[0m [0m[35mok[0m 
+[0m

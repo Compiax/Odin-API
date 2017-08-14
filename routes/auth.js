@@ -1,27 +1,26 @@
 /**
  * Contains all the authentication routes: login, logout, register
+ * Pipeline: validate, authenticate, process request and respond
  */
 
 var auth = require('../controllers/auth')
 var debug     = require('debug')('odin-api:routes:auth');
 var express   = require('express');
 
+
 var router = express.Router();
 
-debug("Adding / route");
-router.use('/', function(req, res, next) {
-    // @todo: Make a better 404 error
-    next("404 Not Found");
-});
-
 debug("Adding /login route");
-router.use('/login', auth.login);
+// Validates query -> Checks if user is already logged in -> logs in
+router.post('/login', auth.validateLogin, auth.isNotLoggedIn, auth.login);
 
 debug("Adding /register route");
-router.use('/register', auth.register);
+// Validates query -> Checks if user is already logged in -> registers
+router.post('/register', auth.validateRegistration, auth.isNotLoggedIn, auth.register);
 
 debug("Adding /logout route");
-router.use('/logout', auth.logout);
+// Validates query -> Checks if user is not logged in -> logs out
+router.post('/logout', auth.isLoggedIn, auth.logout);
 
 debug('Auth router exported');
 module.exports = router;

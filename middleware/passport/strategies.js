@@ -10,7 +10,7 @@ var OPTS = {
     url: 'ldap://' + config.ldap.host + ':' + config.ldap.port,
     bindDN: config.ldap.root,
     bindCredentials: config.ldap.password,
-    searchBase: 'ou=users,dc=AlbertPrime,dc=co,dc=za',
+    searchBase: 'dc=AlbertPrime,dc=co,dc=za',
     searchFilter: '(uid={{username}})'
   },
   "usernameField": "username",

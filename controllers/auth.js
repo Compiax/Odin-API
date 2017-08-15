@@ -7,6 +7,7 @@ var debug     = require('debug')('odin-api:controllers:auth');
 var ldap      = require('ldapjs');
 var passport  = require('../middleware/passport');
 var User      = require('../models/user');
+var JsonAPIResponse = require('../helpers/jsonapiresponse');
 
 // Connect to LDAP
 debug("Connecting to LDAP server");
@@ -26,6 +27,9 @@ client.bind(config.ldap.root, config.ldap.password, function(err) {
 debug('Adding controller: login');
 module.exports.login = function(req, res, next) {
     var loggedIn = function(err, user, info) {
+        debug(req.body.username);
+        debug(req.body.password);
+        if (info) debug (info);
         if (err) return next(err);
         if (!user) return next("Error - invalid credentials. Either the provided username or password is incorrect.");
 
@@ -34,18 +38,12 @@ module.exports.login = function(req, res, next) {
             if (err) return next(err);
 
             debug("Building JSON:API response")
-            var response = {
-                data: {
-                    type: 'users',
-                    id: user.uid,
-                    attributes: {
-                        username: user.uid,
-                        email: user.mail
-                    }
-                }
-            }
-            debug('Sending response (status: 200)');
-            res.status(200).send(response);
+            var response = new JsonAPIResponse();            
+            response.addData('user')
+                .id(user.uid)
+                .attribute({username: user.uid})
+                .attribute({email: user.mail});
+            res.status(200).send(response.toJSON());
         });
     }
 
@@ -91,18 +89,14 @@ module.exports.register = function(req, res, next) {
             // @todo: Handle this error better
             if(err) return next("Error saving user to MongoDB");
 
-            debug('Building JSON:API response');
-            var response = {
-                data: {
-                type: 'users',
-                id: user.username,
-                attributes: {
-                    username: user.username,
-                    email: user.email,
-                    createdAt: user.createdAt
-                }
-                }
-            };
+            debug("Building JSON:API response")
+            var response = new JsonAPIResponse();            
+            response.addData('user')
+                .id(user.username)
+                .attribute({username: user.username})
+                .attribute({email: user.email})
+                .attribute({createdAt: user.createdAt});
+            res.status(200).send(response.toJSON());
 
             debug('Sending response (status: 200)');
             res.status(200).send(response);
@@ -138,60 +132,37 @@ module.exports.logout = function(req, res, next) {
 // Function to validate the registration query
 module.exports.validateRegistration = function(req, res, next) {
     var body = req.body;
-    if (!body.hasOwnProperty("data")) {
-        return next("Invalid query - missing 'data' field");
-    };
-    if (!body.data.hasOwnProperty('type')) {
-        return next ("Invalid query - missing 'data.type' field");
-    };
-    if (body.data.type != 'auth') {
-        return next ("Invalid query - type should be 'auth");
+    if (!body.hasOwnProperty('username')) {
+        return next ("Invalid query - missing 'username' field");
     }
-    if (!body.data.hasOwnProperty('attributes')) {
-        return next ("Invalid query - missing 'data.attributes' field");
+    if (!body.hasOwnProperty('email')) {
+        return next ("Invalid query - missing 'email' field");
     }
-    if (!body.data.attributes.hasOwnProperty('username')) {
-        return next ("Invalid query - missing 'data.attributes.username' field");
-    }
-    if (!body.data.attributes.hasOwnProperty('email')) {
-        return next ("Invalid query - missing 'data.attributes.email' field");
-    }
-    if (!body.data.attributes.hasOwnProperty('password')) {
-        return next ("Invalid query - missing 'data.attributes.password' field");
+    if (!body.hasOwnProperty('password')) {
+        return next ("Invalid query - missing 'password' field");
     }
 
     // Set local variables
-    res.locals.username = body.data.attributes.username;
-    res.locals.email = body.data.attributes.email;
-    res.locals.password = body.data.attributes.password;
+    res.locals.username = body.username;
+    res.locals.email = body.email;
+    res.locals.password = body.password;
     next();
 }
 
 // Function to validate the login query
 module.exports.validateLogin = function(req, res, next) {
     var body = req.body;
-    if (!body.hasOwnProperty("data")) {
-        return next("Invalid query - missing 'data' field");
-    };
-    if (!body.data.hasOwnProperty('type')) {
-        return next ("Invalid query - missing 'data.type' field");
-    };
-    if (body.data.type != 'auth') {
-        return next ("Invalid query - type should be 'auth");
+    if (!body.hasOwnProperty('username')) {
+        return next ("Invalid query - missing 'username' field");
     }
-    if (!body.data.hasOwnProperty('attributes')) {
-        return next ("Invalid query - missing 'data.attributes' field");
+    if (!body.hasOwnProperty('password')) {
+        return next ("Invalid query - missing 'password' field");
     }
-    if (!body.data.attributes.hasOwnProperty('username')) {
-        return next ("Invalid query - missing 'data.attributes.username' field");
-    }
-    if (!body.data.attributes.hasOwnProperty('password')) {
-        return next ("Invalid query - missing 'data.attributes.password' field");
-    }
-
     // Set local variables
-    res.locals.username = body.data.attributes.username;
-    res.locals.password = body.data.attributes.password;
+    res.locals.username = body.username;
+    res.locals.password = body.password;
+    debug(res.locals.username);
+    debug(res.locals.password);
     next();
 }
 

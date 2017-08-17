@@ -8,7 +8,7 @@ var Project = new mongoose.Schema({
         name: String,
         description: String,
         owner: String, //User ID or something like that
-        public: boolean,
+        public: Boolean
         //Where to store the actual source
 });
 

@@ -12,10 +12,10 @@ debug("Adding /create route");
 router.post('/create', project.create);
 
 debug("Adding /publicList route");
-router.post('/list', project.publicList);
+router.post('/publicList', project.publicList);
 
 debug("Adding / privateList route");
-router.post('/userList', project.privateList);
+router.post('/privateList', project.privateList);
 
 debug('Project router exported');
 module.exports = router;

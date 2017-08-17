@@ -15,10 +15,10 @@ module.exports.create = function(req,res,next){
     
     
     var project = new Project({
-        name: req.name,
-        description: req.description,
-        owner: req.owner, //User ID or something like that
-        public: req.public
+        name: req.body.name,
+        description: req.body.description,
+        owner: req.body.owner, //User ID or something like that
+        public: req.body.public
     });
 
     project.save(function(err, project){
@@ -28,7 +28,7 @@ module.exports.create = function(req,res,next){
         debug('Building JSON:API response');
         var response = {
             data: {
-                type: project,
+                type: "project",
                 id: project.id,
                 attributes: {
                 name: project.name,
@@ -97,7 +97,8 @@ module.exports.privateList = function(req, res, next){
     var data = [];
 
     _.forEach(project, function(project){
-        if(project.owner == req.owner){ //Only display the specific owner's projects
+        debug(req.body.owner);
+        if(project.owner == req.body.owner){ //Only display the specific owner's projects
             var _data = {
                 type: 'project',
                 id: project.id,

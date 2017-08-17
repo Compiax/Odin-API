@@ -2,15 +2,20 @@
  * Contains all the routes that deal with projects
  */
 
+var project = require('../controllers/project')
 var debug     = require('debug')('odin-api:routes:project');
 var express   = require('express');
 
 var router = express.Router();
 
-debug("Adding / route");
-router.use('/', function(req, res, next) {
-    next("Not implemented");
-});
+debug("Adding /create route");
+router.post('/create', project.create);
 
-debug('Priject router exported');
+debug("Adding /publicList route");
+router.post('/list', project.publicList);
+
+debug("Adding / privateList route");
+router.post('/userList', project.privateList);
+
+debug('Project router exported');
 module.exports = router;

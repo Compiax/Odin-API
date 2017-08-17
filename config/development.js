@@ -1,9 +1,9 @@
 module.exports.port = 3000;
 
 module.exports.mongo = {
-    host: "odin-api-db",
+    host: "Dimpho-PC", //Change during testing
     port: 27017,
-    database: "odin-api"
+    database: "odin-api-db"
 };
 
 

@@ -40,7 +40,7 @@ module.exports.create = function(req,res,next){
     });
 };
 
-
+/**List all components in the database */
 debug('Exporting method: list');
 module.exports.list = function(req, res, next){
   debug('Getting all components');
@@ -75,3 +75,56 @@ module.exports.list = function(req, res, next){
 
 
 };
+
+/*Delete component method*/
+debug("Exporting method Delete");
+module.exports.Delete = function(req,res){
+    var component = Component.model('Component', Component);
+
+    component.remove({name: req.body.name}, function(err){
+      if(!err){
+          res.send(req.body.name + "has been removed successfully\n");
+      }
+      else{
+          res.send("Remove not possible:  " + req.body.name);
+      }
+    });
+};
+
+/*Update component method */
+debug('Exporting method: Update');
+module.exports.patch = function(req,res,next){
+  var component = Component.model('Component', Component);
+
+  component.findOneAndUpdate({name : req.body.name}, req.body, function(err,component){
+    debug('Checking for errors');
+    if(err) return next(err);
+    if(!component) return next(new Error('could not find component'));
+
+    component.name = req.body.name || component.name;
+    component.description = req.body.description || component.description;
+  
+      component.save(function(err, component){
+        if(err) return next(err);
+        if(!component) return next(new Error('component returned empty'));
+
+        debug('Building JSON:API response');
+        var response = {
+            data: {
+                type: "Updated Component",
+                id: component.id,
+                attributes: {
+                    name: component.name,
+                    description: component.description
+                }
+            }
+        }
+
+        debug('Sending response(status: 200)');
+        res.status(200).send(response);
+  });
+
+});
+
+};
+

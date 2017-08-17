@@ -3,7 +3,8 @@ var express   = require('express');
 var auth      = require('./auth');
 var component = require('./component');
 var project   = require('./project');
-var users      = require('./users');
+var users     = require('./users');
+var session   = require('./session');
 
 var router = express.Router();
 
@@ -18,6 +19,9 @@ router.use('/project', project);
 
 debug('Adding /user route');
 router.use('/users', users);
+
+debug('Adding /session route');
+router.use('/session', session);
 
 debug('Main router exported');
 module.exports = router;

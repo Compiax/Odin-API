@@ -8,14 +8,19 @@ var User = new mongoose.Schema({
         type: String,
         minlength: 3,
         maxlength: 100,
-        index: true
+        index: true,
+        unique: true
     },
     email: {
         required: true,
         type: String,
         minlength: 3,
         maxlength: 100
-    }    
+    },
+    password: {
+        required: true,
+        type: String
+    }
 });
 
 debug('User model exported');

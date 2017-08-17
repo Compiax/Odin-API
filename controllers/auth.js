@@ -4,103 +4,60 @@
 
 var config    = require('../config/development');
 var debug     = require('debug')('odin-api:controllers:auth');
-var ldap      = require('ldapjs');
-var passport  = require('../middleware/passport');
 var User      = require('../models/user');
+var passport  = require('passport');
 var JsonAPIResponse = require('../helpers/jsonapiresponse');
-
-// Connect to LDAP
-debug("Connecting to LDAP server");
-var client = ldap.createClient({
-  url: 'ldap://' + config.ldap.host + ':' + config.ldap.port
-});
-
-// Log in to LDAP
-debug("Logging in to LDAP server");
-client.bind(config.ldap.root, config.ldap.password, function(err) {
-  if (err) debug (err);
-});
 
 /**
  * Controllers
  */
 debug('Adding controller: login');
 module.exports.login = function(req, res, next) {
-    var loggedIn = function(err, user, info) {
-        debug(req.body.username);
-        debug(req.body.password);
+    passport.authenticate('local', (err, user, info) => {
+        if (err) return next (err);
         if (info) debug (info);
-        if (err) return next(err);
-        if (!user) return next("Error - invalid credentials. Either the provided username or password is incorrect.");
-
-        debug("Establishing session")
-        req.login(user, function(err) {
-            if (err) return next(err);
-
-            debug("Building JSON:API response")
-            var response = new JsonAPIResponse();            
-            response.addData('user')
-                .id(user.uid)
-                .attribute({username: user.uid})
-                .attribute({email: user.mail});
+        if (!user) return next ("Authenticatio failed");
+        var response = new JsonAPIResponse();
+        response.addData('user')
+        .id(user.username)
+        .attribute({username: user.username})
+        .attribute({email: user.email})
+        .attribute({password: user.password})
+        .attribute({createdAt: user.createdAt});
+        req.logIn(user, (err) => {
+            if (err) return next (err);
             res.status(200).send(response.toJSON());
         });
-    }
-
-    req.body.username = res.locals.username;
-    req.body.password = res.locals.password;
-    debug("Authenticating with Passport")
-    passport.authenticate('ldapauth', loggedIn)(req, res, next);
+    })(req, res, next);
 }
 
 debug('Adding controller: register');
 module.exports.register = function(req, res, next) {
     debug('Validating registration data');
 
-    debug("Creating new user entry for LDAP");
-    var entry = {
-        sn: res.locals.username,
-        cn: res.locals.username,
-        uid: res.locals.username,
-        mail: res.locals.email,
-        objectClass: 'inetOrgPerson',
-        userPassword: res.locals.password
-    }
-
-    debug(entry);
-
     debug('Creating new user object for Mongo');
     var user = new User({
         username: res.locals.username,
-        email: res.locals.email
+        email: res.locals.email,
+        password: res.locals.password
     });
 
-    debug("Generating distinguished name for LDAP add function");
-    var dn = "cn=" + entry.cn + ",dc=AlbertPrime,dc=co, dc=za";
-
-    debug("Adding user to LDAP")
-    client.add(dn, entry, function(err) {
-        debug('Checking for errors');
+    debug('Saving user to mongo database');
+    user.save(function(err, user) {
         // @todo: Handle this error better
-        if (err) return next("Error saving user to to LDAP");
+        if(err) return next("Error saving user to MongoDB");
 
-        debug('Saving user to mongo database');
-        user.save(function(err, user) {
-            // @todo: Handle this error better
-            if(err) return next("Error saving user to MongoDB");
-
-            debug("Building JSON:API response")
-            var response = new JsonAPIResponse();            
-            response.addData('user')
-                .id(user.username)
-                .attribute({username: user.username})
-                .attribute({email: user.email})
-                .attribute({createdAt: user.createdAt});
-            res.status(200).send(response.toJSON());
-
-            debug('Sending response (status: 200)');
-            res.status(200).send(response);
-        });
+        debug("Building JSON:API response")
+        var response = new JsonAPIResponse();            
+        response.addData('user')
+            .id(user.username)
+            .attribute({username: user.username})
+            .attribute({email: user.email})
+            .attribute({password: user.password})
+            .attribute({createdAt: user.createdAt});
+            
+        debug('Sending response (status: 200)');
+        res.status(200).send(response.toJSON());
     });
 }
 
@@ -161,14 +118,11 @@ module.exports.validateLogin = function(req, res, next) {
     // Set local variables
     res.locals.username = body.username;
     res.locals.password = body.password;
-    debug(res.locals.username);
-    debug(res.locals.password);
     next();
 }
 
 // Checks if user is logged in
 module.exports.isLoggedIn = function(req, res, next) {
-    debug(req.isAuthenticated());
     if(req.isAuthenticated()){
         return next();
 	}

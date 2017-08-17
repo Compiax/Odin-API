@@ -9,6 +9,8 @@ var passport        = require('passport');
 var routes          = require('../routes');
 var session         = require('express-session');
 var MongoStore      = require('connect-mongo')(session);
+var LocalStrategy   = require('passport-local').Strategy;
+var User            = require('../models/user')
 
 
 var init = function() {
@@ -42,7 +44,35 @@ var init = function() {
 
     debug('Adding passport middleware');
     app.use(passport.initialize());
-    app.use(passport.session());
+    app.use(passport.session());  
+
+    passport.serializeUser(function(user, done) {
+        done(null, user.id);
+    });
+      
+    passport.deserializeUser(function(id, done) {
+        User.findById(id, (err, user) => {
+            done(err, user);
+        })
+    });
+  
+    passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.findOne({ username: username }, function (err, user) {
+        if (err) debug(err);
+
+        if (err) { return done(err); }
+        if (!user) {
+            return done(null, false, { message: 'Incorrect username.' });
+        }
+        if (user.password != password) {
+            return done(null, false, { message: 'Incorrect password.' });
+        }
+        debug(user.username + " logged in");
+        return done(null, user);
+        });
+    }
+    ));
 
     debug('Adding routes');
     app.use(routes);

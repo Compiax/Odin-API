@@ -14,9 +14,12 @@ debug("Added route: GET /");
 router.get('/', auth.isLoggedIn, users.browse);
 
 debug("Added route: GET /:username");
-// Checks if logged in -> Responds specific users information
-// @todo: Add validation
-router.get('/:username', auth.isLoggedIn, users.read);
+// Checks if logged in -> Responds with specific users information
+router.get('/:id', auth.isLoggedIn, users.read);
+
+debug("Added route: PATCH /");
+// Checks if logged in -> Validate -> Updates and responds
+router.patch('/:id', auth.isLoggedIn, users.validateUpdate, users.update);
 
 debug('Users router exported');
 module.exports = router;

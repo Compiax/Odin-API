@@ -6,11 +6,8 @@ module.exports.mongo = {
     database: "odin-api"
 };
 
-module.exports.ldap = {
-    host: "odin-api-ldap",
-    port: 389,
-    organisation: "AlbertPrime",
-    domain: "albertprime.co.za",
-    password: "deadjosh",
-    root: "cn=admin,dc=albertprime,dc=co,dc=za"
+
+module.exports.daemon = {
+    host: "localhost",
+    port: 8000
 };

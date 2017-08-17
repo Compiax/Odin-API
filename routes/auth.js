@@ -12,11 +12,11 @@ var router = express.Router();
 
 debug("Adding /login route");
 // Validates query -> Checks if user is already logged in -> logs in
-router.post('/login', auth.validateLogin, auth.isNotLoggedIn, auth.login);
+router.post('/login', auth.validateLogin, auth.login);
 
 debug("Adding /register route");
 // Validates query -> Checks if user is already logged in -> registers
-router.post('/register', auth.validateRegistration, auth.isNotLoggedIn, auth.register);
+router.post('/register', auth.validateRegistration, auth.register);
 
 debug("Adding /logout route");
 // Validates query -> Checks if user is not logged in -> logs out

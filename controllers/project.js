@@ -124,3 +124,56 @@ module.exports.privateList = function(req, res, next){
     res.status(200).send(response);
   });
 };
+
+
+/*Delete project method*/
+debug("Exporting method Delete");
+module.exports.Delete = function(req,res){
+    var project = Project.model('Project', Project);
+
+    project.remove({name: req.body.name}, function(err){
+      if(!err){
+          res.send(req.body.name + "has been removed successfully\n");
+      }
+      else{
+          res.send("Remove not possible:  " + req.body.name);
+      }
+    });
+};
+
+/*Update project method */
+debug('Exporting method: Update');
+module.exports.patch = function(req,res,next){
+  var project = Project.model('Project', Project);
+
+  project.findOneAndUpdate({name : req.body.name}, req.body, function(err,project){
+    debug('Checking for errors');
+    if(err) return next(err);
+    if(!project) return next(new Error('could not find project'));
+
+    project.name = req.body.name || project.name;
+    project.description = req.body.description || project.description;
+  
+      project.save(function(err, project){
+        if(err) return next(err);
+        if(!project) return next(new Error('project returned empty'));
+
+        debug('Building JSON:API response');
+        var response = {
+            data: {
+                type: "Updated project",
+                id: project.id,
+                attributes: {
+                    name: project.name,
+                    description: project.description
+                }
+            }
+        }
+
+        debug('Sending response(status: 200)');
+        res.status(200).send(response);
+  });
+
+});
+
+};

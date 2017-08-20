@@ -2,6 +2,7 @@ var bodyParser      = require('body-parser');
 var cookieParser    = require('cookie-parser');
 var config          = require('../config/development');
 var debug           = require('debug')('odin-api:core:app');
+var errorhandler     = require('../middleware/errorhandler');
 var express         = require('express');
 var morgan          = require('morgan');
 var mongoose        = require('mongoose');
@@ -76,6 +77,9 @@ var init = function() {
 
     debug('Adding routes');
     app.use(routes);
+
+    debug("Adding error handler");
+    app.use(errorhandler);
 
     return app;
 };

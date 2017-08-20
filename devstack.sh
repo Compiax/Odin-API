@@ -21,5 +21,4 @@ docker run \
   -v /home/node/odin-api/node_modules \
   -v $(pwd):/home/node/odin-api \
   -p 3000:3000 \
-  -p 8000:8000 \
   albert-prime/odinapi:source-latest

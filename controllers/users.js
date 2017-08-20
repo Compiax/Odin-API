@@ -5,15 +5,18 @@
 var debug     = require('debug')('odin-api:controllers:users');
 var User      = require('../models/user');
 var JsonAPIResponse = require('../helpers/jsonapiresponse');
+var UserNotFoundError = require('../helpers/errors').users.UserNotFoundError;
 
 // Returns all users
 debug("Adding controller: browse");
 module.exports.browse = function(req, res, next) {
     var response = new JsonAPIResponse();
+    debug("Fetching users");
     User.find({}, function(err, users) {
         if (err) return next (err);
         debug(err);
         users.forEach(function(user) {
+            debug("Building response");
             response.addData('user')
               .id(user._id)
               .attribute({username: user.username})
@@ -29,7 +32,7 @@ debug("Adding controller: read");
 module.exports.read = function(req, res, next) {
     User.findById(req.params.id, function(err, user) {
         if (err) return next (err);
-        if (user == null) return next("User does not exist!");
+        if (user == null) return next(new UserNotFoundError());
         var response = new JsonAPIResponse();
         response.addData('user')
             .id(user._id)

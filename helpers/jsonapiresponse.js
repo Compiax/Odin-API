@@ -22,9 +22,34 @@ var JSONAPIDataItem = function (type) {
     }
 }
 
+var JSONAPIErrorItem = function (type) {
+    // Members
+    this.json = {
+        status: "500",
+        title: "Internal Server Error",
+        detail: "Something went wrong."
+    };
+
+    this.title = (title) => {
+        this.json.title = title;
+        return this;
+    }
+
+    this.status = (status) => {
+        this.json.status = status;
+        return this;
+    }
+
+    this.detail = (detail) => {
+        this.json.detail = detail;
+        return this;
+    }
+}
+
 var JSONAPIResponse = function() {
     // Members
     this.data = [];
+    this.errors = [];
 
     // Functions
     this.addData = function(type) {
@@ -32,10 +57,23 @@ var JSONAPIResponse = function() {
         this.data.push(newDataItem);
         return newDataItem;
     };
+
+    // Functions
+    this.addError = function() {
+        var newErrorItem = new JSONAPIErrorItem();
+        this.errors.push(newErrorItem);
+        return newErrorItem;
+    };
+
     this.toJSON = function() {
-        return {
-            data: this.data.map(function(el) { return el.json })
+        var json = {};
+        if (this.errors.length != 0) {
+            json.errors = this.errors.map(function(err) { return err.json })
         }
+        if (this.data.length != 0) {
+            json.data = this.data.map(function(el) { return el.json })
+        }
+        return json;
     };
 }
 

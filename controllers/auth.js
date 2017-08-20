@@ -7,6 +7,8 @@ var debug     = require('debug')('odin-api:controllers:auth');
 var User      = require('../models/user');
 var passport  = require('passport');
 var JsonAPIResponse = require('../helpers/jsonapiresponse');
+var BadRequestError = require('../helpers/errors').general.BadRequestError;
+var UnauthorizedError = require('../helpers/errors').general.UnauthorizedError;
 
 /**
  * Controllers
@@ -16,7 +18,9 @@ module.exports.login = function(req, res, next) {
     passport.authenticate('local', (err, user, info) => {
         if (err) return next (err);
         if (info) debug (info);
-        if (!user) return next ("Authenticatio failed");
+        if (!user) return next (new BadRequestError("Username or password is incorrect"));
+        
+        debug("Creating response");
         var response = new JsonAPIResponse();
         response.addData('user')
         .id(user.username)
@@ -90,13 +94,13 @@ module.exports.logout = function(req, res, next) {
 module.exports.validateRegistration = function(req, res, next) {
     var body = req.body;
     if (!body.hasOwnProperty('username')) {
-        return next ("Invalid query - missing 'username' field");
+        return next(new BadRequestError("Missing field 'username'"));
     }
     if (!body.hasOwnProperty('email')) {
-        return next ("Invalid query - missing 'email' field");
+        return next(new BadRequestError("Missing field 'email'"));
     }
     if (!body.hasOwnProperty('password')) {
-        return next ("Invalid query - missing 'password' field");
+        return next(new BadRequestError("Missing field 'password'"));
     }
 
     // Set local variables
@@ -110,10 +114,10 @@ module.exports.validateRegistration = function(req, res, next) {
 module.exports.validateLogin = function(req, res, next) {
     var body = req.body;
     if (!body.hasOwnProperty('username')) {
-        return next ("Invalid query - missing 'username' field");
+        return next(new BadRequestError("Missing field 'username'"));
     }
     if (!body.hasOwnProperty('password')) {
-        return next ("Invalid query - missing 'password' field");
+        return next(new BadRequestError("Missing field 'password'"));
     }
     // Set local variables
     res.locals.username = body.username;
@@ -123,11 +127,12 @@ module.exports.validateLogin = function(req, res, next) {
 
 // Checks if user is logged in
 module.exports.isLoggedIn = function(req, res, next) {
+    debug("Checking authentication");
+    debug(req.isAuthenticated());
     if(req.isAuthenticated()){
         return next();
-	}
-
-  return next("Access Denied - need to be logged in.");
+    }
+    return next(new UnauthorizedError());
 }
 
 // Checks if user is not logged in

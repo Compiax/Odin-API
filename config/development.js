@@ -1,13 +1,13 @@
 module.exports.port = 3000;
 
 module.exports.mongo = {
-    host: "Dimpho-PC", //Change during testing
+    host: "odin-api-db", //Change during testing
     port: 27017,
     database: "odin-api-db"
 };
 
 
 module.exports.daemon = {
-    host: "localhost",
+    host: "fakedaemon",
     port: 8000
 };

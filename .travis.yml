@@ -4,7 +4,6 @@ sudo: required
 node_js:
   - '7'
 services:
-  - docker
   - mongodb
 env:
   - NODE_ENV="test"
@@ -12,21 +11,4 @@ before_script:
   - npm install
 script:
   - npm test
-after_script:
  # For dev branch
- - |
-     if [ "$TRAVIS_BRANCH" == "dev" ]; then
-       docker build -t compiax/odin-api:dev-latest .
-       docker tag compiax/odin-api:dev-latest compiax/odin-api:dev-latest
-       docker login -u $DOCKER_USER -p $DOCKER_PASS
-       docker push compiax/odin-api:dev-latest
-     fi
-
- # For master branch
- - |
-     if [ "$TRAVIS_BRANCH" == "master" ]; then
-       docker build -t compiax/odin-api:latest .
-       docker tag compiax/odin-api:latest compiax/odin-api:latest
-       docker login -u $DOCKER_USER -p $DOCKER_PASS
-       docker push compiax/odin-api:latest
-     fi

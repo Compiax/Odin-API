@@ -1,18 +1,23 @@
-var html                = require('./html');
-var CustomError         = require('./custom');
-var debug               = require('debug')('odin-api:helpers:errors:global');
+var debug     = require('debug')('odin-api:middleware:errors:general');
+JsonAPIResponse = require('../jsonapiresponse');
 
-// Typedef for easier usage.
-var InternalServerError = html._5xx.InternalServerError;
+module.exports.BadRequestError = function(detail) {
+    var err = new JsonAPIResponse();
+    err.addError()
+        .status("400")
+        .title("Bad Request")
+        .detail(detail);
 
-debug('Defining auth error class: NotImplementedError');
-var NotImplementedError = function(){
-  InternalServerError.call(this, 'Not implemented yet.');
-  return this;
-};
+    return err;
+}
 
-debug('Binding NotImplementedError to parent class: InternalServerError');
-NotImplementedError.prototype = Object.create(InternalServerError.prototype);
+module.exports.UnauthorizedError = function() {
+    debug("Building error");
+    var err = new JsonAPIResponse();
+    err.addError()
+        .status("401")
+        .title("Unauthorized")
+        .detail("Authentication required");
 
-debug('Exporting auth error class: NotImplementedError');
-module.exports.NotImplementedError = NotImplementedError;
+    return err;
+}

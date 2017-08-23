@@ -1,5 +1,5 @@
-var OdinApi   = require('./core');
-var debug     = require('debug')('odin-api');
+var OdinAPI	= require('./core');
+var debug     		= require('debug')('odin-api');
 
-debug('Initialising OdinApi');
-var odinApi = new OdinApi();
+debug('Initialising OdinAPI');
+var OdinAPI = new OdinAPI();

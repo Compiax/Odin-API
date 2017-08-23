@@ -1,103 +1,87 @@
-var _           = require('lodash');
-var User        = require('../models/user');
-var debug       = require('debug')('odin-api:controllers:users');
-var errors      = require('../helpers/errors');
+/**
+ * Contains all the controllers that deal with users
+ */
 
-// Typedefs for easier usage.
-var NotImplementedError = errors.general.NotImplementedError;
-var UsersNotFoundError = errors.users.UsersNotFoundError;
+var debug     = require('debug')('odin-api:controllers:users');
+var User      = require('../models/user');
+var JsonAPIResponse = require('../helpers/jsonapiresponse');
+var UserNotFoundError = require('../helpers/errors').users.UserNotFoundError;
 
-debug('Exporting method: browse');
-module.exports.browse = function(req, res, next){
-  debug('Trying to find users');
-  User.find(function(err, users){
-    debug('Checking for errors');
-    if(err) return next(err);
-    if(!users) return next(new UsersNotFoundError());
-
-    debug('Building JSON:API response');
-    var data = [];
-
-    /**
-     * @todo: Relationships field not populated correctly yet.
-     */
-    _.forEach(users, function(user){
-      var _data = {
-        type: 'users',
-        id: user.id,
-        attributes: {
-          status: user.status,
-          auth: {
-            username: user.auth.username,
-            email: user.auth.email
-          },
-          timestamps: user.timestamps
-        }
-      };
-
-      data.push(_data);
+// Returns all users
+debug("Adding controller: browse");
+module.exports.browse = function(req, res, next) {
+    var response = new JsonAPIResponse();
+    debug("Fetching users");
+    User.find({}, function(err, users) {
+        if (err) return next (err);
+        debug(err);
+        users.forEach(function(user) {
+            debug("Building response");
+            response.addData('user')
+              .id(user._id)
+              .attribute({username: user.username})
+              .attribute({email: user.email})
+              .attribute({password: user.password});
+        })
+        res.send(response.toJSON());
     });
+}
 
-    var response = {
-      data: data
-    };
+// Returns a specific users information
+debug("Adding controller: read");
+module.exports.read = function(req, res, next) {
+    User.findById(req.params.id, function(err, user) {
+        if (err) return next (err);
+        if (user == null) return next(new UserNotFoundError());
+        var response = new JsonAPIResponse();
+        response.addData('user')
+            .id(user._id)
+            .attribute({password: user.password})
+            .attribute({username: user.username})
+            .attribute({email: user.email});
+        res.send(response.toJSON());
+    });
+} 
 
-    debug('Sending response (status: 200)');
-    res.status(200).send(response);
-  });
-};
+// Updates a user
+debug("Adding controller: update");
+module.exports.update = function(req, res, next) {
+    User.findById(res.locals.id, function(err, user) {
+        if (err) return next (err);
+        if (user == null) return next("User does not exist!");
 
-debug('Exporting method: create');
-module.exports.create = function(req, res, next){
-  next(new NotImplementedError());
-};
+        if (res.locals.username != null && res.locals.username != undefined) {
+            user.username = res.locals.username;
+        }
+        if (res.locals.password != null && res.locals.password != undefined) {
+            user.password = res.locals.password;
+        }
+        if (res.locals.email != null && res.locals.email != undefined) {
+            user.email = res.locals.email;
+        }
+        // debug(res.locals)
+        user.save((err, user) => {
+            if (err) return next (err);
+        });
 
-debug('Exporting method: read');
-module.exports.read = function(req, res, next){
-  next(new NotImplementedError());
-};
+        var response = new JsonAPIResponse();
+        response.addData('user')
+            .id(user.username)
+            .attribute({username: user.username})
+            .attribute({email: user.email});
+        res.send(response.toJSON());
+    });
+} 
 
-debug('Exporting method: update');
-module.exports.update = function(req, res, next){
-  next(new NotImplementedError());
-};
+// Function to validate update request
+module.exports.validateUpdate = function(req, res, next) {
+    var body = req.body;
+    // Set local variables
+    res.locals.username = body.username;
+    res.locals.password = body.password;
+    res.locals.email = body.email;
+    res.locals.id = req.params.id;
+    next();
+}
 
-debug('Exporting method: delete');
-module.exports.delete = function(req, res, next){
-  next(new NotImplementedError());
-};
-
-debug('Exporting method: ideas');
-module.exports.ideas = function(req, res, next){
-  next(new NotImplementedError());
-};
-
-debug('Exporting method: submissions');
-module.exports.submissions = function(req, res, next){
-  next(new NotImplementedError());
-};
-
-debug('Exporting method: history');
-module.exports.history = function(req, res, next){
-  next(new NotImplementedError());
-};
-
-debug('Exporting method: transactions');
-module.exports.transactions = function(req, res, next){
-  next(new NotImplementedError());
-};
-
-debug('Exporting method: wallet');
-module.exports.wallet = function(req, res, next){
-  next(new NotImplementedError());
-};
-
-debug('Exporting method: profile');
-module.exports.profile = function(req, res, next){
-  next(new NotImplementedError());
-};
-
-debug('Exporting method: votes');
-module.exports.votes = function(req, res, next){
-  next(new NotImplementedError());
-};
+debug('User controllers exported');

@@ -1,32 +1,21 @@
-var html          = require('./html');
-var CustomError   = require('./custom');
-var debug         = require('debug')('odin-api:helpers:errors:users');
+JsonAPIResponse = require('../jsonapiresponse');
 
-// Typedef for easier usage.
-var NotFoundError = html._4xx.NotFoundError;
+module.exports.UserNotFoundError = function() {
+    var err = new JsonAPIResponse();
+    err.addError()
+        .status("404")
+        .title("User Not Found")
+        .detail("The requested user does not exist");
 
-debug('Defining users error class: UserNotFoundError');
-var UserNotFoundError = function(){
-  NotFoundError.call(this, 'User not found.');
-  return this;
-};
+    return err;
+}
 
-debug('Defining users error class: UsersNotFoundError');
-var UsersNotFoundError = function(){
-  NotFoundError.call(this, 'Users not found.');
-  return this;
-};
+module.exports.UserAlreadyExistsError = function() {
+    var err = new JsonAPIResponse();
+    err.addError()
+        .status("400")
+        .title("User Already Exists")
+        .detail("That username has already been taken");
 
-
-debug('Binding UserNotFoundError to parent class: NotFoundError');
-UserNotFoundError.prototype = Object.create(NotFoundError.prototype);
-
-debug('Binding UsersNotFoundError to parent class: NotFoundError');
-UsersNotFoundError.prototype = Object.create(NotFoundError.prototype);
-
-
-debug('Exporting users error class: UserNotFoundError');
-module.exports.UserNotFoundError = UserNotFoundError;
-
-debug('Exporting users error class: UsersNotFoundError');
-module.exports.UsersNotFoundError = UsersNotFoundError;
+    return err;
+}

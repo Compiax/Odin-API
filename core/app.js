@@ -1,64 +1,91 @@
 var bodyParser      = require('body-parser');
 var cookieParser    = require('cookie-parser');
-var cors            = require('cors');
+var config          = require('../config/development');
 var debug           = require('debug')('odin-api:core:app');
-var errors          = require('../middleware/errors');
+var errorhandler     = require('../middleware/errorhandler');
 var express         = require('express');
-var logger          = require('morgan');
+var morgan          = require('morgan');
 var mongoose        = require('mongoose');
 var passport        = require('passport');
-var session         = require('express-session');
 var routes          = require('../routes');
-// Init of Redis
+var session         = require('express-session');
 var MongoStore      = require('connect-mongo')(session);
+var LocalStrategy   = require('passport-local').Strategy;
+var User            = require('../models/user')
 
-var init = function(config){
-  debug('Initialising environment variables');
-  var mongoHost = config.servers.db.host;
-  var mongoDatabase = config.servers.db.database;
-  var sessionSecret = config.session.secret;
 
-  debug('Connecting to mongo database');
-  mongoose.connect('mongodb://' + mongoHost + '/' + mongoDatabase);
-  var mongoStore = new MongoStore({mongooseConnection: mongoose.connection});
+var init = function() {
+    debug('Initialising environment variables');
+    var mongoHost = config.mongo.host;
+    var mongoDatabase = config.mongo.database;
 
-  debug('Creating application');
-  app = express();
+    debug('Connecting to mongo database');
+    mongoose.connect('mongodb://' + mongoHost + '/' + mongoDatabase);
+    var mongoStore = new MongoStore({mongooseConnection: mongoose.connection});
+    mongoose.Promise = global.Promise;
 
-  debug('Adding body-parser');
-  app.use(bodyParser.urlencoded({
-    extended: true
-  }));
+    debug('Creating application');
+    app = express();
 
-  debug('Adding cookie-parser');
-  app.use(cookieParser());
+    debug('Adding session');
+    app.use(session({
+        resave: true,
+        saveUninitialized: true,
+        secret: "deadjosh",
+        store: mongoStore
+    }));
 
-  debug('Adding morgan');
-  app.use(logger('dev'));
 
-  debug('Adding cors');
-  var corsOptions = config.cors || null;
-  app.use(cors(corsOptions));
+    debug('Adding body-parser');
+        app.use(bodyParser.urlencoded({
+        extended: true
+    }));
 
-  debug('Adding session');
-  app.use(session({
-    resave: true,
-    saveUninitialized: true,
-    secret: sessionSecret,
-    store: mongoStore
-  }));
+    app.use(morgan('dev'))
 
-  debug('Adding passport');
-  app.use(passport.initialize());
-  app.use(passport.session());
+    var cors = require('cors')
+    
+    app.use(cors())
 
-  debug('Adding router');
-  app.use('/', routes);
+    debug('Adding passport middleware');
+    app.use(passport.initialize());
+    app.use(passport.session());  
 
-  debug('Adding generic error middleware');
-  app.use(errors);
+    passport.serializeUser(function(user, done) {
+        done(null, user.id);
+    });
+      
+    passport.deserializeUser(function(id, done) {
+        User.findById(id, (err, user) => {
+            done(err, user);
+        })
+    });
+  
+    passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.findOne({ username: username }, function (err, user) {
+        if (err) debug(err);
 
-  return app;
+        if (err) { return done(err); }
+        if (!user) {
+            return done(null, false, { message: 'Incorrect username.' });
+        }
+        if (user.password != password) {
+            return done(null, false, { message: 'Incorrect password.' });
+        }
+        debug(user.username + " logged in");
+        return done(null, user);
+        });
+    }
+    ));
+
+    debug('Adding routes');
+    app.use(routes);
+
+    debug("Adding error handler");
+    app.use(errorhandler);
+
+    return app;
 };
 
 module.exports.init = init;

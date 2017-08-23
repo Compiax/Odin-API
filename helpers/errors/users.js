@@ -9,3 +9,13 @@ module.exports.UserNotFoundError = function() {
 
     return err;
 }
+
+module.exports.UserAlreadyExistsError = function() {
+    var err = new JsonAPIResponse();
+    err.addError()
+        .status("400")
+        .title("User Already Exists")
+        .detail("That username has already been taken");
+
+    return err;
+}

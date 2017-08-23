@@ -8,7 +8,11 @@ debug('Defining schema: Component');
 var Component = new mongoose.Schema({
         name: String,
         description: String,
-        //more atrributes to be added
+        created: {
+                required: true,
+                type: Date,
+                default: new Date()
+        }
 });
 
 debug('Component model exported');

@@ -26,7 +26,7 @@ module.exports.create = function(req,res,next){
         debug('Building JSON:API response');
         var response = {
             data: {
-                type: component,
+                type: "component",
                 id: component.id,
                 attributes: {
                     name: component.name,
@@ -46,7 +46,12 @@ module.exports.list = function(req, res, next){
   debug('Getting all components');
   Component.find(function(err, component){
     debug('Checking for errors');
-    if(err) return next(err);
+    if(err) {
+        debug(err);
+        debug(err.name);
+        debug(err.errors);
+        return next(err);
+    } 
     if(!component) return next(new Error('No components found.'));
 
     debug('Building JSON:API response');
@@ -59,6 +64,7 @@ module.exports.list = function(req, res, next){
         attributes: {
           name: component.name,
           description: component.description,
+          created: component.created
         }
       };
 
@@ -80,14 +86,13 @@ module.exports.list = function(req, res, next){
 debug("Exporting method Delete");
 module.exports.Delete = function(req,res){
     var component = Component.model('Component', Component);
-
-    component.remove({name: req.body.name}, function(err){
-      if(!err){
-          res.send(req.body.name + "has been removed successfully\n");
-      }
-      else{
-          res.send("Remove not possible:  " + req.body.name);
-      }
+    component.findByIdAndRemove(req.params.id, function(err) {
+        if(!err){
+            res.send("Success");
+        }
+        else{
+            res.send("Error: " + err);
+        }
     });
 };
 

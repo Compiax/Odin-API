@@ -9,12 +9,14 @@ var passport  = require('passport');
 var JsonAPIResponse = require('../helpers/jsonapiresponse');
 var BadRequestError = require('../helpers/errors').general.BadRequestError;
 var UnauthorizedError = require('../helpers/errors').general.UnauthorizedError;
+var UserAlreadyExistsError = require('../helpers/errors').users.UserAlreadyExistsError;
 
 /**
  * Controllers
  */
 debug('Adding controller: login');
 module.exports.login = function(req, res, next) {
+    debug(req.headers);
     passport.authenticate('local', (err, user, info) => {
         if (err) return next (err);
         if (info) debug (info);
@@ -23,7 +25,7 @@ module.exports.login = function(req, res, next) {
         debug("Creating response");
         var response = new JsonAPIResponse();
         response.addData('user')
-        .id(user.username)
+        .id(user._id)
         .attribute({username: user.username})
         .attribute({email: user.email})
         .attribute({password: user.password})
@@ -49,8 +51,16 @@ module.exports.register = function(req, res, next) {
     debug('Saving user to mongo database');
     user.save(function(err, user) {
         // @todo: Handle this error better
-        if(err) return next("Error saving user to MongoDB");
-
+        if(err) {
+            debug(err);
+            debug(err.error);
+            debug(err.code);
+            if (err.code === 11000) {
+                return next(new UserAlreadyExistsError());
+            } else {
+                return next(err);
+            }
+        } 
         debug("Building JSON:API response")
         var response = new JsonAPIResponse();            
         response.addData('user')
@@ -92,6 +102,7 @@ module.exports.logout = function(req, res, next) {
  */
 // Function to validate the registration query
 module.exports.validateRegistration = function(req, res, next) {
+    debug (req.body);
     var body = req.body;
     if (!body.hasOwnProperty('username')) {
         return next(new BadRequestError("Missing field 'username'"));

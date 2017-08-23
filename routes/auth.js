@@ -22,5 +22,9 @@ debug("Adding /logout route");
 // Validates query -> Checks if user is not logged in -> logs out
 router.post('/logout', auth.isLoggedIn, auth.logout);
 
+router.post('/loggedIn', auth.isLoggedIn, (req, res) => {
+    res.send(req.user);
+})
+
 debug('Auth router exported');
 module.exports = router;

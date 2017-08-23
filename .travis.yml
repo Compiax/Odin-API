@@ -10,4 +10,8 @@ env:
 before_script:
   - npm install
 script:
+<<<<<<< HEAD
   - npm test
+=======
+  - npm test
+ # For dev branch

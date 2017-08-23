@@ -1,0 +1,25 @@
+{
+  "cors": {
+    "origin": "*",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS"
+    ]
+  },
+  "session": {
+    "secret": "odin-session-secret-source"
+  },
+  "servers": {
+    "http": {
+      "port": "3000"
+    },
+    "db": {
+      "host": "127.0.0.1",
+      "database": "odin"
+    }
+  }
+}

@@ -43,6 +43,10 @@ var init = function() {
 
     app.use(morgan('dev'))
 
+    var cors = require('cors')
+    
+    app.use(cors())
+
     debug('Adding passport middleware');
     app.use(passport.initialize());
     app.use(passport.session());  

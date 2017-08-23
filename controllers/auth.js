@@ -16,6 +16,7 @@ var UserAlreadyExistsError = require('../helpers/errors').users.UserAlreadyExist
  */
 debug('Adding controller: login');
 module.exports.login = function(req, res, next) {
+    debug("Login");
     debug(req.headers);
     passport.authenticate('local', (err, user, info) => {
         if (err) return next (err);

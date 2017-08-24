@@ -2,13 +2,13 @@
  * Contains all the controllers that deal with authentication
  */
 
-var debug     = require('debug')('odin-api:controllers:auth');
-var User      = require('../models/user');
-var passport  = require('passport');
-var JsonAPIResponse = require('../helpers/jsonapiresponse');
-var BadRequestError = require('../helpers/errors').general.BadRequestError;
-var UnauthorizedError = require('../helpers/errors').general.UnauthorizedError;
-var UserAlreadyExistsError = require('../helpers/errors').users.UserAlreadyExistsError;
+var debug                   = require('debug')('odin-api:controllers:auth');
+var BadRequestError         = require('../helpers/errors').general.BadRequestError;
+var UnauthorizedError       = require('../helpers/errors').general.UnauthorizedError;
+var UserAlreadyExistsError  = require('../helpers/errors').users.UserAlreadyExistsError;
+var JsonAPIResponse         = require('../helpers/jsonapiresponse');
+var passport                = require('passport');
+var User                    = require('../models/user');
 
 /**
  * Controllers
@@ -24,12 +24,10 @@ module.exports.login = function(req, res, next) {
 
         debug("Creating response");
         var response = new JsonAPIResponse();
-        response.addData('user')
+        response.addData('users')
         .id(user._id)
-        .attribute({username: user.username})
-        .attribute({email: user.email})
-        .attribute({password: user.password})
-        .attribute({createdAt: user.createdAt});
+        .attribute(user.attributes())
+        .link({self: req.headers.host + "/users/" + user._id});
         req.logIn(user, (err) => {
             if (err) return next (err);
             res.status(200).send(response.toJSON());
@@ -52,9 +50,6 @@ module.exports.register = function(req, res, next) {
     user.save(function(err, user) {
         // @todo: Handle this error better
         if(err) {
-            debug(err);
-            debug(err.error);
-            debug(err.code);
             if (err.code === 11000) {
                 return next(new UserAlreadyExistsError());
             } else {
@@ -62,14 +57,12 @@ module.exports.register = function(req, res, next) {
             }
         }
         debug("Building JSON:API response")
-        var response = new JsonAPIResponse();
-        response.addData('user')
-            .id(user.username)
-            .attribute({username: user.username})
-            .attribute({email: user.email})
-            .attribute({password: user.password})
-            .attribute({createdAt: user.createdAt});
-
+        var response = new JsonAPIResponse();            
+        response.addData('users')
+            .id(user._id)
+            .attribute(user.attributes())
+            .link({self: req.headers.host + "/users/" + user._id});
+            
         debug('Sending response (status: 200)');
         res.status(200).send(response.toJSON());
     });
@@ -83,18 +76,14 @@ module.exports.logout = function(req, res, next) {
     req.logout();
 
     debug('Building JSON:API response');
-    debug(user);
+    debug(user.attributes());
 
-
-    var response = {
-        data: {
-            type: 'user',
-            id: user
-        }
-    };
+    debug("Building JSON:API response")
+    var response = new JsonAPIResponse();
+    response.addData('users').id(user._id).attribute(user.attributes());
 
     debug('Sending response (status: 200)');
-    res.status(200).send(response);
+    res.status(200).send(response.toJSON());
 }
 
 /**

@@ -1,179 +1,102 @@
-/**
- * This contains all project controllers
- */
-
 var _       = require('lodash');
 var debug   = require('debug')('odin-api:controllers:project');
 var Project     = require('../models/project');
+var JsonAPIResponse = require('../helpers/jsonapiresponse');
+var ProjectNotFoundError = require('../helpers/errors/').ProjectNotFoundError;
 
-debug('Initialising project controller');
-
-
-//Create a new project method and add to database
-debug('Exporting method: create');
-module.exports.create = function(req,res,next){
-    
-    
+debug('Exporting method: Create');
+module.exports.create = function(req,res,next) {  
     var project = new Project({
         name: req.body.name,
         description: req.body.description,
-        owner: req.body.owner, //User ID or something like that
-        public: req.body.public
+        owner: req.user._id
     });
-
-    project.save(function(err, project){
+    debug(project);
+    project.save(function(err, project) {
         if(err) return next(err);
-        if(!project) return next(new Error('project returned empty'));
+        if(project == undefined || project == null) return next('Error saving new project');
 
         debug('Building JSON:API response');
-        var response = {
-            data: {
-                type: "project",
-                id: project.id,
-                attributes: {
-                name: project.name,
-                description: project.description,
-                owner: project.owner,
-                public: project.public
-                }
-            }
-        }
+        var response = new JsonAPIResponse();
+        response.addData('projects')
+            .id(project._id)
+            .attribute(project.attributes());
 
         debug('Sending response(status: 200)');
-        res.status(200).send(response);
+        res.status(200).send(response.toJSON());
     });
 };
 
-/*Public list Project Method*/
-debug('Exporting method: publicList');
-module.exports.publicList = function(req, res, next){
+module.exports.browse = function(req, res, next){
   debug('Getting all projects');
-  Project.find(function(err, project){
+  Project.find({owner: req.user._id}, function(err, projects) {
     debug('Checking for errors');
     if(err) return next(err);
-    if(!project) return next(new Error('No projects found.'));
+    if(projects == undefined || projects == null) return next("Error retrieving projects");
 
     debug('Building JSON:API response');
-    var data = [];
-
-    _.forEach(project, function(project){
-        if(project.public){ //Only display public projects
-            var _data = {
-                type: 'project',
-                id: project.id,
-                attributes: {
-                name: project.name,
-                description: project.description,
-                owner: project.owner,
-                public: project.public
-                }
-            
-      };
-
-      data.push(_data);
-        }
+    var response = new JsonAPIResponse();
+    // debug(pro)
+    projects.forEach(project => {
+        response.addData('projects')
+            .id(project._id)
+            .attribute(project.attributes());
     });
 
-    var response = {
-      data: data
-    };
-
     debug('Sending response (status: 200)');
-    res.status(200).send(response);
+    res.status(200).send(response.toJSON());
   });
 };
 
 
-/*Private Project List Method*/
-debug('Exporting method: privateList');
-module.exports.privateList = function(req, res, next){
-  debug('Getting all projects');
-  Project.find(function(err, project){
-    debug('Checking for errors');
-    if(err) return next(err);
-    if(!project) return next(new Error('No projects found.'));
-
-    debug('Building JSON:API response');
-    var data = [];
-
-    _.forEach(project, function(project){
-        debug(req.body.owner);
-        if(project.owner == req.body.owner){ //Only display the specific owner's projects
-            var _data = {
-                type: 'project',
-                id: project.id,
-                attributes: {
-                name: project.name,
-                description: project.description,
-                owner: project.owner,
-                public: project.public
-                }
-            
-      };
-
-      data.push(_data);
-        }
-    });
-
-    var response = {
-      data: data
-    };
-  
-
-    debug('Sending response (status: 200)');
-    res.status(200).send(response);
-  });
-};
-
-
-/*Delete project method*/
-debug("Exporting method Delete");
-module.exports.Delete = function(req,res){
-    var project = Project.model('Project', Project);
-
-    project.remove({name: req.body.name}, function(err){
-      if(!err){
-          res.send(req.body.name + "has been removed successfully\n");
-      }
-      else{
-          res.send("Remove not possible:  " + req.body.name);
-      }
-    });
-};
-
-/*Update project method */
-debug('Exporting method: Update');
-module.exports.patch = function(req,res,next){
-  var project = Project.model('Project', Project);
-
-  project.findOneAndUpdate({name : req.body.name}, req.body, function(err,project){
-    debug('Checking for errors');
-    if(err) return next(err);
-    if(!project) return next(new Error('could not find project'));
-
-    project.name = req.body.name || project.name;
-    project.description = req.body.description || project.description;
-  
-      project.save(function(err, project){
+module.exports.read = function(req, res, next){
+    debug('Getting all projects');
+    Project.findById(req.params.id, function(err, project) {
+        debug('Checking for errors');
         if(err) return next(err);
-        if(!project) return next(new Error('project returned empty'));
+        if(project == undefined || project == null) return next(new ProjectNotFoundError());
 
         debug('Building JSON:API response');
-        var response = {
-            data: {
-                type: "Updated project",
-                id: project.id,
-                attributes: {
-                    name: project.name,
-                    description: project.description
-                }
-            }
-        }
+        var response = new JsonAPIResponse();
+      
+    response.addData('projects')
+        .id(project._id)
+        .attribute(project.attributes());
+  
+        debug('Sending response (status: 200)');
+        res.status(200).send(response.toJSON());
+    });
+};
 
-        debug('Sending response(status: 200)');
-        res.status(200).send(response);
+module.exports.delete = function(req,res) {
+    Project.findByIdAndRemove(req.params.id, (err, project) => {
+        if (project == null || project == undefined) return next(new ProjectNotFoundError());
+        if (err) return next(err);
+        res.status(200).send("OK");
+    });
+};
+
+module.exports.update = function(req, res, next) {
+    let update = {};
+    if (req.body.name != undefined && req.body.name != null) {
+        update.name = req.body.name;
+    }
+    if (req.body.description != undefined && req.body.description != null) {
+        update.description = req.body.description;
+    }
+
+    Project.findByIdAndUpdate(req.params.id, update, (err, project) => {
+        debug('Checking for errors');
+        if(err) return next(err);
+        if(project == undefined || project == null) return next(new ProjectNotFoundError());
+
+        // Return updated project
+        Project.findById(req.params.id, (err, project) => {
+            var response = new JsonAPIResponse();
+            response.addData('projects')
+                .id(project._id)
+                .attribute(project.attributes());         
+            res.status(200).send(response.toJSON());
+        })        
   });
-
-});
-
 };

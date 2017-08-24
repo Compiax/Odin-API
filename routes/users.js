@@ -10,16 +10,16 @@ var users     = require('../controllers/users');
 var router = express.Router();
 
 debug("Added route: GET /");
-// Checks if logged in -> Responds with all users
 router.get('/', auth.isLoggedIn, users.browse);
 
-debug("Added route: GET /:username");
-// Checks if logged in -> Responds with specific users information
+debug("Added route: GET /:id");
 router.get('/:id', auth.isLoggedIn, users.read);
 
-debug("Added route: PATCH /");
-// Checks if logged in -> Validate -> Updates and responds
-router.patch('/:id', auth.isLoggedIn, users.validateUpdate, users.update);
+debug("Added route: PATCH /:id");
+router.patch('/:id', auth.isLoggedIn, users.update);
+
+debug("Added route: DE?ETE /:id");
+router.delete('/:id', auth.isLoggedIn, users.delete);
 
 debug('Users router exported');
 module.exports = router;

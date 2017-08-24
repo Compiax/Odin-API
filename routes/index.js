@@ -12,10 +12,10 @@ debug('Adding /auth route');
 router.use('/auth', auth);
 
 debug('Adding /component route');
-router.use('/component', component);
+router.use('/components', component);
 
 debug('Adding /project route');
-router.use('/project', project);
+router.use('/projects', project);
 
 debug('Adding /user route');
 router.use('/users', users);

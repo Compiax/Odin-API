@@ -11,15 +11,20 @@
     ]
   },
   "session": {
-    "secret": "odin-session-secret-source"
+    "secret": "odin-session-secret-test"
   },
   "servers": {
-    "http": {
-      "port": "3000"
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 8000
     },
     "db": {
       "host": "127.0.0.1",
       "database": "odin"
+    },
+    "http": {
+      "host": "https://127.0.0.1",
+      "port": "3000"
     }
   }
 }

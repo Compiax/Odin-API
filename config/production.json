@@ -1,9 +1,6 @@
 {
   "cors": {
-    "origin": [
-      "https://odin.com",
-      "https://www.odin.com"
-    ],
+    "origin": "https://api.albertprime.co.za",
     "methods": [
       "GET",
       "POST",
@@ -14,15 +11,20 @@
     ]
   },
   "session": {
-    "secret": "odin-session-secret-prod"
+    "secret": "odin-session-secret"
   },
   "servers": {
-    "http": {
-      "port": "3000"
+    "daemon": {
+      "host": "odin-daemon",
+      "port": 8000
     },
     "db": {
-      "host": "odin-db-prod",
+      "host": "odin-db",
       "database": "odin"
+    },
+    "http": {
+      "host": "https://api.albertprime.co.za",
+      "port": "3000"
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "cors": {
-    "origin": "*",
+    "origin": "http://localhost",
     "methods": [
       "GET",
       "POST",
@@ -14,12 +14,17 @@
     "secret": "odin-session-secret-source"
   },
   "servers": {
-    "http": {
-      "port": "3000"
+    "daemon": {
+      "host": "odin-daemon-source",
+      "port": 8000
     },
     "db": {
       "host": "odin-db-source",
       "database": "odin"
+    },
+    "http": {
+      "host": "http://localhost",
+      "port": "3000"
     }
   }
 }

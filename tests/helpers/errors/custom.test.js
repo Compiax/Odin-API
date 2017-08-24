@@ -3,7 +3,7 @@ var errors    = require('../../../helpers/errors');
 var should    = require('should');
 
 // Typedefs for easier usage.
-var CustomError = errors.CustomError;
+var CustomError = errors.custom;
 
 module.exports.test = function(){
   describe('custom =>', function() {

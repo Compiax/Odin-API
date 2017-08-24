@@ -11,7 +11,7 @@ module.exports.create = function(req,res,next) {
         description: req.body.description,
         owner: req.user._id
     });
-
+    debug(project);
     project.save(function(err, project) {
         if(err) return next(err);
         if(project == undefined || project == null) return next('Error saving new project');

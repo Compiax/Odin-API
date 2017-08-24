@@ -9,7 +9,7 @@ var session   = require('../controllers/session');
 var router = express.Router();
 
 debug("Adding POST /execute route");
-router.post('/', session.execute);
+router.post('/execute', session.execute);
 
 debug('Session router exported');
 module.exports = router;

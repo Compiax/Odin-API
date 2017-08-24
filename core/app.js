@@ -1,8 +1,9 @@
 var bodyParser      = require('body-parser');
 var cookieParser    = require('cookie-parser');
-var config          = require('../config/development');
+var config          = require('config');
+var cors            = require('cors')
 var debug           = require('debug')('odin-api:core:app');
-var errorhandler     = require('../middleware/errorhandler');
+var errorhandler    = require('../middleware/errorhandler');
 var express         = require('express');
 var morgan          = require('morgan');
 var mongoose        = require('mongoose');
@@ -16,11 +17,14 @@ var User            = require('../models/user')
 
 var init = function() {
     debug('Initialising environment variables');
-    var mongoHost = config.mongo.host;
-    var mongoDatabase = config.mongo.database;
+    var mongoHost = config.servers.db.host;
+    var mongoDatabase = config.servers.db.database;
 
     debug('Connecting to mongo database');
-    mongoose.connect('mongodb://' + mongoHost + '/' + mongoDatabase);
+    mongoose.connect(`mongodb://${mongoHost}/${mongoDatabase}`, {
+      useMongoClient: true
+    });
+
     var mongoStore = new MongoStore({mongooseConnection: mongoose.connection});
     mongoose.Promise = global.Promise;
 
@@ -42,25 +46,22 @@ var init = function() {
     }));
 
     app.use(morgan('dev'))
-
-    var cors = require('cors')
-    
     app.use(cors())
 
     debug('Adding passport middleware');
     app.use(passport.initialize());
-    app.use(passport.session());  
+    app.use(passport.session());
 
     passport.serializeUser(function(user, done) {
         done(null, user.id);
     });
-      
+
     passport.deserializeUser(function(id, done) {
         User.findById(id, (err, user) => {
             done(err, user);
         })
     });
-  
+
     passport.use(new LocalStrategy(
     function(username, password, done) {
         User.findOne({ username: username }, function (err, user) {

@@ -2,7 +2,6 @@
  * Contains all the controllers that deal with authentication
  */
 
-var config    = require('../config/development');
 var debug     = require('debug')('odin-api:controllers:auth');
 var User      = require('../models/user');
 var passport  = require('passport');
@@ -22,7 +21,7 @@ module.exports.login = function(req, res, next) {
         if (err) return next (err);
         if (info) debug (info);
         if (!user) return next (new BadRequestError("Username or password is incorrect"));
-        
+
         debug("Creating response");
         var response = new JsonAPIResponse();
         response.addData('user')
@@ -61,16 +60,16 @@ module.exports.register = function(req, res, next) {
             } else {
                 return next(err);
             }
-        } 
+        }
         debug("Building JSON:API response")
-        var response = new JsonAPIResponse();            
+        var response = new JsonAPIResponse();
         response.addData('user')
             .id(user.username)
             .attribute({username: user.username})
             .attribute({email: user.email})
             .attribute({password: user.password})
             .attribute({createdAt: user.createdAt});
-            
+
         debug('Sending response (status: 200)');
         res.status(200).send(response.toJSON());
     });

@@ -2,7 +2,7 @@ var bodyParser      = require('body-parser');
 var cookieParser    = require('cookie-parser');
 var config          = require('../config/development');
 var debug           = require('debug')('odin-api:core:app');
-var errorhandler     = require('../middleware/errorhandler');
+var errorhandler    = require('../middleware/errorhandler');
 var express         = require('express');
 var morgan          = require('morgan');
 var mongoose        = require('mongoose');
@@ -12,7 +12,7 @@ var session         = require('express-session');
 var MongoStore      = require('connect-mongo')(session);
 var LocalStrategy   = require('passport-local').Strategy;
 var User            = require('../models/user')
-
+var cors            = require('cors')
 
 var init = function() {
     debug('Initialising environment variables');
@@ -43,10 +43,8 @@ var init = function() {
 
     app.use(morgan('dev'))
 
-    var cors = require('cors')
+    app.use(cors({ origin: 'http://localhost:4200' , credentials :  true}))
     
-    app.use(cors())
-
     debug('Adding passport middleware');
     app.use(passport.initialize());
     app.use(passport.session());  

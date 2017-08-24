@@ -16,8 +16,19 @@ var JSONAPIDataItem = function (type) {
         }
         return this;
     }
+
     this.id = function(id) {
         this.json.id = id;
+        return this;
+    }
+
+    this.link = function(links) {
+        if (!this.json.hasOwnProperty('links')) {
+            this.json.links = {};
+        }
+        for (var link in links) {
+            this.json.links[link] = links[link];
+        }
         return this;
     }
 }

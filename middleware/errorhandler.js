@@ -11,6 +11,7 @@ module.exports = function(err, req, res, next) {
         debug("Handling generic response");
         var response = new JSONAPIResponse();
         response.addError();
+        debug(err);
         if (err instanceof String) {
             response.addError().detail(err);
         } else {

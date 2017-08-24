@@ -9,9 +9,9 @@ module.exports.test = function(){
   describe('errors =>', function() {
     auth.test();
     custom.test();
-    general.test();
+    //general.test();
     html.test();
     tokens.test();
-    users.test();
+    //users.test();
   });
 };

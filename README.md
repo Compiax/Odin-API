@@ -7,9 +7,5 @@ Build status:
 
 | branch | status |
 | ------ | ------ |
-| master | @todo Add travis build status |
-
-======================
-## Running everything
-To run everything (on Linux) simply run the devstack.sh file:
-`sudo sh devstack.sh`
+| master | [![Build Status](https://travis-ci.org/Compiax/Odin-API.svg?branch=master)](https://travis-ci.org/Compiax/Odin-API) |
+| dev    | [![Build Status](https://travis-ci.org/Compiax/Odin-API.svg?branch=dev)](https://travis-ci.org/Compiax/Odin-API) |

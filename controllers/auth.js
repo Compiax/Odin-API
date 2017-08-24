@@ -2,14 +2,13 @@
  * Contains all the controllers that deal with authentication
  */
 
-var config    = require('../config/development');
-var debug     = require('debug')('odin-api:controllers:auth');
-var User      = require('../models/user');
-var passport  = require('passport');
-var JsonAPIResponse = require('../helpers/jsonapiresponse');
-var BadRequestError = require('../helpers/errors').general.BadRequestError;
-var UnauthorizedError = require('../helpers/errors').general.UnauthorizedError;
-var UserAlreadyExistsError = require('../helpers/errors').users.UserAlreadyExistsError;
+var debug                   = require('debug')('odin-api:controllers:auth');
+var BadRequestError         = require('../helpers/errors').general.BadRequestError;
+var UnauthorizedError       = require('../helpers/errors').general.UnauthorizedError;
+var UserAlreadyExistsError  = require('../helpers/errors').users.UserAlreadyExistsError;
+var JsonAPIResponse         = require('../helpers/jsonapiresponse');
+var passport                = require('passport');
+var User                    = require('../models/user');
 
 /**
  * Controllers
@@ -22,7 +21,7 @@ module.exports.login = function(req, res, next) {
         if (err) return next (err);
         if (info) debug (info);
         if (!user) return next (new BadRequestError("Username or password is incorrect"));
-        
+
         debug("Creating response");
         var response = new JsonAPIResponse();
         response.addData('users')
@@ -56,7 +55,7 @@ module.exports.register = function(req, res, next) {
             } else {
                 return next(err);
             }
-        } 
+        }
         debug("Building JSON:API response")
         var response = new JsonAPIResponse();            
         response.addData('users')

@@ -1,6 +1,7 @@
 {
   "cors": {
     "origin": "http://localhost",
+    "credentials": true,
     "methods": [
       "GET",
       "POST",

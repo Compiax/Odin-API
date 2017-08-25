@@ -13,7 +13,7 @@ var session         = require('express-session');
 var MongoStore      = require('connect-mongo')(session);
 var LocalStrategy   = require('passport-local').Strategy;
 var User            = require('../models/user')
-
+var cors            = require('cors')
 
 var init = function() {
     debug('Initialising environment variables');
@@ -44,13 +44,14 @@ var init = function() {
         app.use(bodyParser.urlencoded({
         extended: true
     }));
+    app.use(bodyParser.json());
 
     app.use(morgan('dev'))
 
     debug('Adding cors');
     var corsOptions = config.cors || null;
     app.use(cors(corsOptions));
-
+    
     debug('Adding passport middleware');
     app.use(passport.initialize());
     app.use(passport.session());

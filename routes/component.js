@@ -5,20 +5,24 @@
 var component = require('../controllers/component')
 var debug     = require('debug')('odin-api:routes:component');
 var express   = require('express');
+var auth      = require('../controllers/auth');
 
 var router = express.Router();
 
-debug("Adding /create route");
-router.post('/create', component.create);
+debug("Adding POST /");
+router.post('/', auth.isLoggedIn, component.create);
 
-debug("Adding DELETE /:id route");
-router.delete('/:id', component.Delete);
+debug("Adding DELETE /:id");
+router.delete('/:id', auth.isLoggedIn, component.delete);
 
-debug('Adding GET / route');
-router.get('/', component.list); //lists all components in the db
+debug('Adding GET /');
+router.get('/', auth.isLoggedIn, component.browse);
 
-debug('Adding/update route');
-router.patch('/', component.patch)
+debug('Adding GET /');
+router.get('/:id', auth.isLoggedIn, component.read);
+
+debug('Adding PATCH /');
+router.patch('/:id', auth.isLoggedIn, component.update)
 
 debug('Component router exported');
 module.exports = router;

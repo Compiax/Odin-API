@@ -1,6 +1,7 @@
 {
   "cors": {
     "origin": "*",
+    "credentials": true,
     "methods": [
       "GET",
       "POST",

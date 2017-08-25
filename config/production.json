@@ -1,6 +1,6 @@
 {
   "cors": {
-    "origin": "https://api.albertprime.co.za",
+    "origin": "https://www.albertprime.co.za",
     "methods": [
       "GET",
       "POST",

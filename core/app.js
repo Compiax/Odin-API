@@ -46,7 +46,10 @@ var init = function() {
     }));
 
     app.use(morgan('dev'))
-    app.use(cors())
+
+    debug('Adding cors');
+    var corsOptions = config.cors || null;
+    app.use(cors(corsOptions));
 
     debug('Adding passport middleware');
     app.use(passport.initialize());

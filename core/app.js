@@ -47,12 +47,11 @@ var init = function() {
     }));
     app.use(bodyParser.json());
     
+    app.use(morgan('dev'))
+
     debug('Adding cors');
     var corsOptions = config.cors || null;
     app.use(cors(corsOptions));
-
-    app.use(morgan('dev'))
-
     
     debug('Adding passport middleware');
     app.use(passport.initialize());

@@ -31,6 +31,7 @@ var init = function() {
     debug('Creating application');
     app = express();
 
+    
     debug('Adding session');
     app.use(session({
         resave: true,
@@ -38,17 +39,20 @@ var init = function() {
         secret: "deadjosh",
         store: mongoStore
     }));
-
-
+    
+    
     debug('Adding body-parser');
-        app.use(bodyParser.urlencoded({
+    app.use(bodyParser.urlencoded({
         extended: true
     }));
     app.use(bodyParser.json());
+    
+    debug('Adding cors');
+    var corsOptions = config.cors || null;
+    app.use(cors(corsOptions));
 
     app.use(morgan('dev'))
 
-    app.use(cors({ origin: 'http://localhost:4200' , credentials :  true}))
     
     debug('Adding passport middleware');
     app.use(passport.initialize());
@@ -82,8 +86,7 @@ var init = function() {
     }
     ));
 
-    debug('Adding routes');
-    app.use(routes);
+    app.use('/', routes);
 
     debug("Adding error handler");
     app.use(errorhandler);

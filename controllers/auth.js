@@ -1,148 +1,76 @@
+var _                       = require("lodash")
+var debug                   = require('debug')('odin-api:controllers:auth')
+var errors                  = require('../helpers/errors')
+var JsonAPIResponse         = require('../helpers/jsonapiresponse')
+var passport                = require('passport')
+
+// Type definitions
+var UnauthorizedError       = errors.general.UnauthorizedError
+var UserAlreadyExistsError  = errors.users.UserAlreadyExistsError
+var WrongCredentialsError   = errors.auth.WrongCredentialsError
+var BadRequestError         = errors.general.BadRequestError
+
 /**
- * Contains all the controllers that deal with authentication
+ * Middleware function to log the user in
+ * Didn't use the pipeline architecture for this as access to the request object is needed.
  */
-
-var debug                   = require('debug')('odin-api:controllers:auth');
-var BadRequestError         = require('../helpers/errors').general.BadRequestError;
-var UnauthorizedError       = require('../helpers/errors').general.UnauthorizedError;
-var UserAlreadyExistsError  = require('../helpers/errors').users.UserAlreadyExistsError;
-var JsonAPIResponse         = require('../helpers/jsonapiresponse');
-var passport                = require('passport');
-var User                    = require('../models/user');
-
-/**
- * Controllers
- */
-debug('Adding controller: login');
-module.exports.login = function(req, res, next) {
-    debug("Login");
-    debug(req.headers);
-    passport.authenticate('local', (err, user, info) => {
-        if (err) return next (err);
-        if (info) debug (info);
-        if (!user) return next (new BadRequestError("Username or password is incorrect"));
-
-        debug("Creating response");
-        var response = new JsonAPIResponse();
-        response.addData('users')
-        .id(user._id)
-        .attribute(user.attributes())
-        .link({self: req.headers.host + "/users/" + user._id});
-        req.logIn(user, (err) => {
-            if (err) return next (err);
-            res.status(200).send(response.toJSON());
-        });
-    })(req, res, next);
-}
-
-debug('Adding controller: register');
-module.exports.register = function(req, res, next) {
-    debug('Validating registration data');
-
-    debug('Creating new user object for Mongo');
-    var user = new User({
-        username: res.locals.username,
-        email: res.locals.email,
-        password: res.locals.password
-    });
-
-    debug('Saving user to mongo database');
-    user.save(function(err, user) {
-        // @todo: Handle this error better
-        if(err) {
-            if (err.code === 11000) {
-                return next(new UserAlreadyExistsError());
-            } else {
-                return next(err);
-            }
+module.exports.login = (req, res, next) => {
+    debug('Calling middleware function register()')
+    // Check if correct fields are in req.body
+    _.forEach(['username', 'password', 'email'], key => {
+        if (!_.has(req.body, key)) {
+            return reject(`Missing field '${key}' in req.body`)
         }
-        debug("Building JSON:API response")
-        var response = new JsonAPIResponse();            
-        response.addData('users')
-            .id(user._id)
-            .attribute(user.attributes())
-            .link({self: req.headers.host + "/users/" + user._id});
-            
-        debug('Sending response (status: 200)');
-        res.status(200).send(response.toJSON());
-    });
-}
+    })
 
-debug('Adding controller: logout');
-module.exports.logout = function(req, res, next) {
-    var user = req.user;
+    // This is ugly but that's because Passport is ugly
+    passport.authenticate('local', (err, user, info) => {
+        if (err) return next(err)
+        if (!user) return next(new BadRequestError("Username or password is incorrect"))
 
-    debug('Destroying session');
-    req.logout();
+        req.logIn(user, (err) => {
+            if (err) return next(err)
 
-    debug('Building JSON:API response');
-    debug(user.attributes());
-
-    debug("Building JSON:API response")
-    var response = new JsonAPIResponse();
-    response.addData('users').id(user._id).attribute(user.attributes());
-
-    debug('Sending response (status: 200)');
-    res.status(200).send(response.toJSON());
+            let response = new JsonAPIResponse()
+            response.addData('user')
+                .id(user._id)
+                .attribute(user.attributes())
+                .link({self: `/users/${user.username}`})
+            return res.status(200).json(response.toJSON()).send()
+        })
+    })(req, res, next)
 }
 
 /**
- * Helpers
+ * Middleware function to log the user out.
+ * Didn't use the pipeline architecture for this as access to the request object is needed.
  */
-// Function to validate the registration query
-module.exports.validateRegistration = function(req, res, next) {
-    debug (req.body);
-    var body = req.body;
-    if (!body.hasOwnProperty('username')) {
-        return next(new BadRequestError("Missing field 'username'"));
+module.exports.logout = (req, res, next) => {
+    debug('Calling middleware function logout()')
+    if (req.user)
+        debug(`Destroying session for ${req.user.username}`)
+    else
+        debug("Noone is logged in")
+    req.logout()
+    res.status(204).send()
+}
+    
+/**
+ * Middleware function to check if the user is logged in.
+ * Didn't use the pipeline architecture for this as access to the request object is needed.
+ */
+module.exports.authenticate = (req, res, next) => {
+    debug('Calling middleware function login()')
+    if (req.isAuthenticated()) {
+        let response = new JsonAPIResponse()
+        response.addData('user')
+            .id(req.user_id)
+            .attribute(req.user.attributes())
+            .link({self: `/users/${req.user.username}`})
+        return res.status(200).json(response.toJSON()).send()
+    } else {
+        return next(new UnauthorizedError())
     }
-    if (!body.hasOwnProperty('email')) {
-        return next(new BadRequestError("Missing field 'email'"));
-    }
-    if (!body.hasOwnProperty('password')) {
-        return next(new BadRequestError("Missing field 'password'"));
-    }
-
-    // Set local variables
-    res.locals.username = body.username;
-    res.locals.email = body.email;
-    res.locals.password = body.password;
-    next();
 }
 
-// Function to validate the login query
-module.exports.validateLogin = function(req, res, next) {
-    var body = req.body;
-    if (!body.hasOwnProperty('username')) {
-        return next(new BadRequestError("Missing field 'username'"));
-    }
-    if (!body.hasOwnProperty('password')) {
-        return next(new BadRequestError("Missing field 'password'"));
-    }
-    // Set local variables
-    res.locals.username = body.username;
-    res.locals.password = body.password;
-    next();
-}
-
-// Checks if user is logged in
-module.exports.isLoggedIn = function(req, res, next) {
-    debug("Checking authentication");
-    debug(req.isAuthenticated());
-    if(req.isAuthenticated()){
-        return next();
-    }
-    return next(new UnauthorizedError());
-}
-
-// Checks if user is not logged in
-module.exports.isNotLoggedIn = function(req, res, next) {
-    debug(req.isAuthenticated());
-    if(!req.isAuthenticated()){
-        return next();
-    }
-
-    return next("Error - already logged in!");
-};
-
-debug('Auth controllers exported');
+debug('Auth controllers exported')

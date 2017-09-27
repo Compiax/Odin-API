@@ -1,22 +1,22 @@
-var debug       = require('debug')('odin-api:middleware:errorhandler');
+var debug       = require('debug')('odin-api:middleware:errorhandler')
 
-var JSONAPIResponse = require('../helpers/jsonapiresponse');
+var JSONAPIResponse = require('../helpers/jsonapiresponse')
 
-debug("Exporting error handler function");
+debug("Exporting error handler function")
 module.exports = function(err, req, res, next) {
     if (err instanceof JSONAPIResponse) {
-        debug(err.errors[0].json.status);
-        return res.status(err.errors[0].json.status).send(err);
+        debug(err.errors[0].json.status)
+        return res.status(err.errors[0].json.status).send(err)
     } else {
-        debug("Handling generic response");
-        var response = new JSONAPIResponse();
-        response.addError();
-        debug(err);
+        debug("Handling generic response")
+        var response = new JSONAPIResponse()
+        response.addError()
+        debug(err)
         if (err instanceof String) {
-            response.addError().detail(err);
+            response.addError().detail(err)
         } else {
-            response.addError();
+            response.addError()
         }
-        return res.status(500).send(response);
+        return res.status(500).send(response)
     }
 }

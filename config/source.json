@@ -1,6 +1,7 @@
 {
   "cors": {
     "origin": "http://localhost",
+    "credentials": true,
     "methods": [
       "GET",
       "POST",
@@ -19,7 +20,7 @@
       "port": 8000
     },
     "db": {
-      "host": "odin-db-source",
+      "host": "odin-db-dev",
       "database": "odin"
     },
     "http": {

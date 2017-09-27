@@ -1,23 +1,21 @@
-var debug     = require('debug')('odin-api:middleware:errors:general');
-JsonAPIResponse = require('../jsonapiresponse');
+JsonAPIResponse = require('../jsonapiresponse')
 
 module.exports.BadRequestError = function(detail) {
-    var err = new JsonAPIResponse();
+    var err = new JsonAPIResponse()
     err.addError()
         .status("400")
         .title("Bad Request")
-        .detail(detail);
+        .detail(detail)
 
-    return err;
+    return err
 }
 
 module.exports.UnauthorizedError = function() {
-    debug("Building error");
-    var err = new JsonAPIResponse();
+    var err = new JsonAPIResponse()
     err.addError()
         .status("401")
         .title("Unauthorized")
-        .detail("Authentication required");
+        .detail("Authentication required")
 
-    return err;
+    return err
 }

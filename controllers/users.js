@@ -16,6 +16,7 @@ var UserAlreadyExistsError  = errors.users.UserAlreadyExistsError
 module.exports.create = (args) => {
     return new Promise((resolve, reject) => {     
         debug("Calling create() controller")
+        debug(args.data)
         User.create(args.data)
         .then(user => {
             args.data.user = user

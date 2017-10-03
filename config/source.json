@@ -16,7 +16,7 @@
   },
   "servers": {
     "daemon": {
-      "host": "odin-daemon-source",
+      "host": "odin-daemon",
       "port": 8000
     },
     "db": {

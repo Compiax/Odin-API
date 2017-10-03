@@ -9,6 +9,7 @@ debug('Defining schema: Project')
 var Project = new mongoose.Schema({
     name: String,
     description: String,
+    data: String,
     owner: {
         ref: 'User',
         type: ObjectId
@@ -21,7 +22,7 @@ var Project = new mongoose.Schema({
 })
 
 Project.methods.attributes = function(cb) {
-    return { name: this.name, description: this.description, owner: { id: this.owner.id, username: this.owner.username }, created: this.created}
+    return { name: this.name, description: this.description, owner: { id: this.owner.id, username: this.owner.username }, created: this.created, data: this.data}
 }
 
 debug('Project model exported')

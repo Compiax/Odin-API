@@ -17,6 +17,7 @@ docker run \
   -e "NODE_ENV=source" \
   -e "DEBUG=odin-api*" \
   --link odin-db-dev \
+  --link odin-daemon \
   --name odin-api \
   -v /home/node/odin-api/node_modules \
   -v $(pwd):/home/node/odin-api \

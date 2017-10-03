@@ -33,7 +33,7 @@ module.exports.create = (args) => {
 }
 
 /**
- * Pipeline function to build a JSON:API response to descripe a project or collection of projects
+ * Pipeline function to build a JSON:API response to describe a project or collection of projects
  * Requires: project or projects
  * Adds: response
  */

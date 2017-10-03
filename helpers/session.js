@@ -4,36 +4,31 @@ var net       = require('net')
 
 var session = {}
 
-session.start = function() {
-  var variables  = [
-    "{ name: 'a', dimensions: [2 2], value: [1, 1, 1, 1]}",
-    "{ name: 'b', dimensions: [2 2], value: [1, 1, 1, 1]",
-    "{ name: 'c', dimensions: [2 2] }",
-    "{ name: 'result', dimensions: [2 2] }"
-  ]
-  var operations = [
-    "ADD a, b, c",
-    "SUM b, c, d",
-    "DOT a, a, result"
-  ]
+session.variables = []
+session.operations = []
 
+session.setVariables = function(variables) {
+    this.variables = variables
+    return this
+}
+
+session.setOperations = function(operations) {
+    this.operations = operations
+    return this
+}
+
+session.start = function() {
   var client = new net.Socket()
   var host = config.servers.daemon.host
   var port = config.servers.daemon.port
 
   debug(`Attempting to connect to ${host}:${port}`)
-  client.connect(port, host, function() {
+  client.connect(port, host, () => {
       debug(`Connected to daemon on ${host}:${port}`)
-      debug("Sending variables:")
-      variables.forEach((item) => {
-          client.write(item) + "\n"
-          debug(item)
-      })
-      debug("Sending operations:")
-      operations.forEach((item) => {
-          client.write(item) + "\n"
-          debug(item)
-      })
+      debug("Sending data:")
+      let data = this.variables.map(a => JSON.stringify(a)).join('\n')+'\n'+this.operations.join(';')+';';
+      client.write(data)
+      debug(data)
       debug("Session sent. Awaiting result")
   })
 

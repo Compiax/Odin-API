@@ -1,5 +1,9 @@
-var debug           = require('debug')('odin-api:controllers:session')
-var session         = require('../helpers/session')
+var debug                   = require('debug')('odin-api:controllers:session')
+var session                 = require('../helpers/session')
+var _                       = require('lodash')
+var IncorrectStructureError = require('../helpers/errors').session.IncorrectStructureError
+var shortid                 = require('shortid')
+var session                 = require('../helpers/session')
 
 /**
  * Pipeline function to execute the project
@@ -8,117 +12,139 @@ var session         = require('../helpers/session')
 module.exports.execute = (args) => {
     return new Promise((resolve, reject) => { 
         debug("Calling execute() controller")
-        args.data.response = "Executed"
+
+        let nodes = args.data.nodes
+
+        buildTree(args.data.outputNode, nodes)
+        defineVariables(nodes)
+        let code = []
+        let variables = getVariables(nodes)
+        getCode(args.data.outputNode, code)
+        debug(code)
+        debug(variables)
+
+        session.setVariables(variables)
+            .setOperations(code)
+            .start()
+
+        // _.forEach(nodes, node => {
+        //     printNode(node)
+        // })
+
+        
+        resolve(args)
+        args.response = "OK"
+    })
+}
+
+/**
+ * Pipeline function to check that the given nodes are correctly structured
+ */
+module.exports.check = (args) => {
+    return new Promise((resolve, reject) => { 
+        debug("Calling check() controller")
+        
+        _.forEach(args.data.nodes, node => {
+            if (node.component === "Output" && node.author == "Base") {
+                if (args.data.outputNode !== undefined) {
+                    reject(new IncorrectStructureError("Can't have two output nodes."))
+                }
+                args.data.outputNode = node
+            }
+        })
+
+        if (args.data.outputNode === undefined) {
+            reject(new IncorrectStructureError("Need at least one output node."))
+        }
+        debug(args.data.outputNode)
+        if (args.data.outputNode.edges.inputs.length > 1) {
+            reject(new IncorrectStructureError("Output node cannot have more than one input."))
+        } else if (args.data.outputNode.edges.inputs.length === 0) {
+            reject(new IncorrectStructureError("Output node needs at least one input."))
+        }
+
         resolve(args)
     })
 }
 
-// let currentVar = 'A'
+/**
+ * Builds the tree, setting the child of each node
+ * Note: Each node can only have one child, but multiple parents.
+ * Recursive.
+ */
+function buildTree(currentNode, nodes) {
+    if (currentNode.parents === undefined) {
+        currentNode.parents = []
+    }
+    debug("Calling buildTree()")
+    _.forEach(nodes, node => {
+        if (_.intersection(node.edges.outputs, currentNode.edges.inputs).length > 0 && node.id !== currentNode.id) {
+            node.child = currentNode
+            currentNode.parents.push(node)
+            buildTree(node, nodes)
+        }
+    })
+}
 
-// debug('Adding controller: login')
-// module.exports.execute = function(req, res, next) {
-//     let inputs = []
+/**
+ * Searches all the nodes and defines a variable for the output of each node
+ */
+function defineVariables(nodes) {
+    debug("Calling defineVariables()")
+    let inputNumber = 1
+    shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#')
+    _.forEach(nodes, node => {
+        if (node.edges.outputs.length > 0) {
+            node.var = { name: shortid.generate(), dimensions: [2,2], values: [1,1,1,1], save: 0, rank: 2 }
+        }
+        if (node.child && node.child.component === "Output") {
+            node.var.name = "return"
+        }
+        if (node.component === "Input") {
+            node.var.name = `input-${inputNumber++}`
+        }
+    })
+}
 
-//     debug("Executing session")
-//     debug(req.body)
-//     nodes = req.body
-//     lastNode = null
-//     nodes.forEach(node => {
-//         if (node.component === 'Output') {
-//             if (lastNode == null) {
-//                 lastNode = node
-//             } else {
-//                 return next("Multiple output components not allowed!")
-//             }
-//         }
-//         node.var = currentVar
-//         currentVar = nextChar(currentVar)
-//         debug("Assigning variable " + node.var + " to " + node.id)
-//         if (node.component === 'Input') {
-//             inputs.push(node)
-//             node.lookedAt = true
-//         }
-//         node.edges.forEach(edge => {
-//             findNeighbour(nodes, node, edge)
-//         })
-//     })
-//     if (lastNode == null) {
-//         return next("No output node!")
-//     }
-//     debug("There is only one output node, and it is " + lastNode.id)
-//     if (inputs.length === 0) {
-//         next("There needs to be at least one input!")
-//     }
-//     debug("There is at least one input")
-//     debug(inputs)
-//     debug(nodes)
+function printNode(node) {
+    debug(`== ${node.component} ==`)
+    debug(`-> Inputs: [${node.edges.inputs}]`)
+    debug(`-> Outputs: [${node.edges.outputs}]`)
+    if (node.child !== undefined) {
+        debug(`-> Child: ${node.child.component}`)
+    }
+    if (node.parents !== undefined) {
+        debug(`-> Parents: [${node.parents.map(p => p.component)}]`)
+    }
+    if (node.var !== undefined) {
+        debug(`-> Variable: ${node.var.name}`)
+    }
+}
 
-//     // inputs.forEach(input => {
-//     //     crawlTree(input, nodes)
-//     // })
-//     crawlTree(lastNode, nodes)
-//     debug("")
-//     debug("")
-//     debug("")
-    
-//     nodes.forEach(node => {
-//         if (["Add", "Subtract", "Multiply", "Divide"].includes(node.component)) {
-//             node.instruction = node.component.toUpperCase() + " " + node.var + node.varsUsed.join(' ')
-//         }
-//     })
-    
-//     debug(nodes)
-//     // session.start()
-//     res.status(200).send("Success")
-// }
+function getCode(node, code) {
+    if (node.parents) {
+        _.forEach(node.parents, parent => {
+            getCode(parent, code)
+        })
+        let parentVars = node.parents.map(p => p.var.name)
+        if (node.component === "Add") {
+            code.push(`SUM ${parentVars[0]} ${parentVars[1]} ${node.var.name}`)
+        }
+        if (node.component === "Subtract") {
+            code.push(`SUB ${parentVars[0]} ${parentVars[1]} ${node.var.name}`)
+        }
+        if (node.component === "Multiply") {
+            code.push(`MUL ${parentVars[0]} ${parentVars[1]} ${node.var.name}`)
+        }
+    }
+}
 
-// function nextChar(c) {
-//     return String.fromCharCode(c.charCodeAt(0) + 1)
-// }
-
-// function findNeighbour(nodes, currentNode, edgeID) {
-//     nodes.forEach(node => {
-//         if (node != currentNode && node.edges.includes(edgeID)) {
-//             if (!currentNode.hasOwnProperty('neighbours')) {
-//                 currentNode.neighbours = []
-//             }
-//             if (!currentNode.neighbours.includes(node.id)) {
-//                 currentNode.neighbours.push(node.id)
-//             }
-//         }
-//     })
-// }
-
-// function getNode(nodes, nodeID) {
-//     debug("Looking for " + nodeID)
-//     theNode = null
-//     nodes.forEach(node => {
-//         if (node.id == nodeID) {
-//             theNode = node
-//         }
-//     })
-//     return theNode
-// }
-
-// function crawlTree(node, nodes) {
-//     debug("Crawling from " + node.id)
-
-//     node.neighbours.forEach(neighbour => {
-//         neighbour = getNode(nodes, neighbour)
-//         debug(getNode(nodes, neighbour))
-//         if (neighbour.component == "Output") {
-//             debug("Arrived at output")
-//             neighbour.lookedAt = true
-//             return
-//         }
-//         debug("Looking at neighour " + neighbour.id)
-//         if (["Add", "Subtract", "Multiply", "Divide"].includes(neighbour.component) && !neighbour.lookedAt) {
-//             if (!neighbour.hasOwnProperty("varsUsed")) {
-//                 neighbour.varsUsed = []
-//             }
-//             neighbour.varsUsed.push(node.var)
-//             neighbour.lookedAt = true
-//             crawlTree(neighbour, nodes)
-//         }
-//     })
-// }
+function getVariables(nodes) {
+    var variables = []
+    _.forEach(nodes, n => {
+        if (n.var) {
+            variables.push(n.var)
+        } 
+    })
+    return variables
+} 

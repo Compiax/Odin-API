@@ -15,11 +15,12 @@ var BadRequestError         = errors.general.BadRequestError
  * Didn't use the pipeline architecture for this as access to the request object is needed.
  */
 module.exports.login = (req, res, next) => {
-    debug('Calling middleware function register()')
+    debug('Calling middleware function login()')
     // Check if correct fields are in req.body
-    _.forEach(['username', 'password', 'email'], key => {
+    debug(req.body)
+    _.forEach(['username', 'password'], key => {
         if (!_.has(req.body, key)) {
-            return reject(`Missing field '${key}' in req.body`)
+            return next(`Missing field '${key}' in req.body`)
         }
     })
 
@@ -60,7 +61,7 @@ module.exports.logout = (req, res, next) => {
  * Didn't use the pipeline architecture for this as access to the request object is needed.
  */
 module.exports.authenticate = (req, res, next) => {
-    debug('Calling middleware function login()')
+    debug('Calling middleware function authenticate()')
     if (req.isAuthenticated()) {
         let response = new JsonAPIResponse()
         response.addData('user')

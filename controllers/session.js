@@ -98,7 +98,7 @@ function defineVariables(nodes) {
             node.var = { name: shortid.generate(), dimensions: [2,2], values: [1,1,1,1], save: 0, rank: 2 }
         }
         if (node.child && node.child.component === "Output") {
-            node.var.name = "return"
+            node.var.name = "result"
         }
         if (node.component === "Input") {
             node.var.name = `input-${inputNumber++}`

@@ -1,0 +1,14 @@
+dist: trusty
+language: node_js
+sudo: required
+node_js:
+  - '7'
+services:
+  - mongodb
+env:
+  - NODE_ENV="test"
+before_script:
+  - npm install
+script:
+  - npm test
+ # For dev branch

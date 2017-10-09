@@ -1,0 +1,31 @@
+{
+  "cors": {
+    "origin": "https://www.albertprime.co.za",
+    "credentials": true,
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS"
+    ]
+  },
+  "session": {
+    "secret": "odin-session-secret"
+  },
+  "servers": {
+    "daemon": {
+      "host": "odin-daemon",
+      "port": 8000
+    },
+    "db": {
+      "host": "odin-db",
+      "database": "odin"
+    },
+    "http": {
+      "host": "https://api.albertprime.co.za",
+      "port": "3000"
+    }
+  }
+}

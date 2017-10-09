@@ -154,6 +154,10 @@ module.exports.destroy = (args) => {
         })
     })
 }
+/**
+* Pipeline function to retrieve user components
+* Requires:UserID
+*/
 
  module.exports.getByUser = (args) => {
     return new Promise((resolve, reject) => { 

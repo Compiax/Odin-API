@@ -158,8 +158,8 @@ module.exports.destroy = (args) => {
 }
 
 /**
-* Pipeline function to delete a project
-* Requires: project
+* Pipeline function to retrive user projects
+* Requires: UserId
 */
 
  module.exports.getByUser = (args) => {

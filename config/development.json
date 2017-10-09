@@ -20,7 +20,7 @@
       "port": 8000
     },
     "db": {
-      "host": "odin-db-dev",
+      "host": "Dimpho-PC",//"odin-db-dev",
       "database": "odin"
     },
     "http": {

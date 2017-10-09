@@ -28,5 +28,10 @@ let destroy = [
     projects.destroy
 ]
 
-module.exports = { browse, read, update, destroy, create }
+let getByUser = [
+   projects.find,
+   projects.buildResponse
+]
+
+module.exports = { browse, read, update, destroy, create, getByUser }
 debug("Exported projects API")

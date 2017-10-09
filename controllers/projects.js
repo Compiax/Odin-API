@@ -156,3 +156,27 @@ module.exports.destroy = (args) => {
         })
     })
 }
+
+/**
+* Pipeline function to delete a project
+* Requires: project
+*/
+
+ module.exports.getByUser = (args) => {
+    return new Promise((resolve, reject) => { 
+        debug("Calling getByUser() controller")
+
+         if (!_.has(args.data, 'userID')) 
+            return reject('Missing userID in args.data')
+
+       Project.find({owner: {$elemMatch: {ObjectID:userID.toString()}}}), function(err, projects){
+          if(!projects)  return reject(new ProjectNotFoundError())
+
+                args.data.projects = projects
+                return resolve(args)
+          } 
+        .catch(err => {
+            return reject(err)
+        })
+    })
+}

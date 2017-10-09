@@ -9,6 +9,7 @@ router.get('/:projectID', api.http(api.projects.read))
 router.get('/', api.http(api.projects.browse))
 router.patch('/:projectID', api.http(api.projects.update))
 router.post('/', api.http(api.projects.create))
+router.post('/:UserID', api.http(api.projects.create))
 
 debug('Projects router exported')
 module.exports = router

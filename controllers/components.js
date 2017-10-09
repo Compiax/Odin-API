@@ -154,3 +154,22 @@ module.exports.destroy = (args) => {
         })
     })
 }
+
+ module.exports.getByUser = (args) => {
+    return new Promise((resolve, reject) => { 
+        debug("Calling getByUser() controller")
+
+         if (!_.has(args.data, 'userID')) 
+            return reject('Missing userID in args.data')
+
+        Component.find({author: {$elemMatch: {ObjectID:userID.toString()}}}, function(err, components){
+          if(!components)  return reject(new ComponentNotFoundError())
+
+                args.data.components = components
+                return resolve(args)
+          })  
+        .catch(err => {
+            return reject(err)
+        })
+    })
+}

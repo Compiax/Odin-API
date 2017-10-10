@@ -28,7 +28,7 @@ let destroy = [
 ]
 
 let getByUser = [
-    controllers.components.find,
+    controllers.components.getByUser,
     controllers.components.buildResponse
 ]
 

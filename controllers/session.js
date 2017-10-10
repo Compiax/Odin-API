@@ -26,13 +26,17 @@ module.exports.execute = (args) => {
         session.setVariables(variables)
             .setOperations(code)
             .start()
+            .then((answer) => {
+                debug(answer)
+                args.data.response = answer;
+                resolve(args)
+            })
 
         // _.forEach(nodes, node => {
         //     printNode(node)
         // })
 
         
-        resolve(args)
         args.response = "OK"
     })
 }

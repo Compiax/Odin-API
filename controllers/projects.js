@@ -53,7 +53,7 @@ module.exports.buildResponse = (args) => {
                 .id(project._id)
                 .attribute(project.attributes())
                 .link({self: `/projects/${project._id}`})
-                .link({author: `/projects/${project.owner.username}`})
+                // .link({author: `/projects/${project.owner.username}`})
         })
 
         args.data.response = response

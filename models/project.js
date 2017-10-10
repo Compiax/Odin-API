@@ -22,7 +22,7 @@ var Project = new mongoose.Schema({
 })
 
 Project.methods.attributes = function(cb) {
-    return { name: this.name, description: this.description, owner: { id: this.owner.id, username: this.owner.username }, created: this.created, data: this.data}
+    return { name: this.name, description: this.description, owner: { id: (this.owner) ? this.owner.id : null, username: (this.owner) ? this.owner.username : null }, created: this.created, data: this.data}
 }
 
 debug('Project model exported')

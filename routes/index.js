@@ -1,27 +1,18 @@
-var debug     = require('debug')('odin-api:routes');
-var express   = require('express');
-var auth      = require('./auth');
-var component = require('./component');
-var project   = require('./project');
-var users     = require('./users');
-var session   = require('./session');
+var auth       = require('./auth')
+var components = require('./components')
+var debug      = require('debug')('odin-api:routes')
+var express    = require('express')
+var project    = require('./project')
+var session    = require('./session')
+var users      = require('./users')
 
-var router = express.Router();
+var router = express.Router()
 
-debug('Adding /auth route');
-router.use('/auth', auth);
+router.use('/auth', auth)
+router.use('/components', components)
+router.use('/projects', project)
+router.use('/session', session)
+router.use('/users', users)
 
-debug('Adding /component route');
-router.use('/components', component);
-
-debug('Adding /project route');
-router.use('/projects', project);
-
-debug('Adding /user route');
-router.use('/users', users);
-
-debug('Adding /session route');
-router.use('/session', session);
-
-debug('Main router exported');
-module.exports = router;
+debug('Main router exported')
+module.exports = router

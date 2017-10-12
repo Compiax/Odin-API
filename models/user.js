@@ -1,8 +1,7 @@
-var debug       = require('debug')('odin-api:models:user');
-var mongoose    = require('mongoose');
-var JsonAPIResponse = require('../helpers/jsonapiresponse');
+var debug       = require('debug')('odin-api:models:user')
+var mongoose    = require('mongoose')
 
-debug('Defining schema: User');
+debug('Defining schema: User')
 var User = new mongoose.Schema({
     username: {
         required: true,
@@ -22,11 +21,11 @@ var User = new mongoose.Schema({
         required: true,
         type: String
     }
-});
+})
 
 User.methods.attributes = function(cb) {
-    return {username: this.username, email: this.email};
+    return {username: this.username, email: this.email}
 }
 
-debug('User model exported');
-module.exports = mongoose.model('User', User);
+debug('User model exported')
+module.exports = mongoose.model('User', User)

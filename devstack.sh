@@ -6,7 +6,7 @@ docker build -t albert-prime/odinapi:source-latest .
 docker run \
   -itd \
   --rm \
-  --name odin-api-db \
+  --name odin-db-dev \
   -p 27017:27017 \
   library/mongo:3.0.14 --smallfiles
 
@@ -16,7 +16,8 @@ docker run \
   --rm \
   -e "NODE_ENV=source" \
   -e "DEBUG=odin-api*" \
-  --link odin-api-db \
+  --link odin-db-dev \
+  --link odin-daemon \
   --name odin-api \
   -v /home/node/odin-api/node_modules \
   -v $(pwd):/home/node/odin-api \

@@ -1,15 +1,10 @@
-/**
- * Contains all the routes that deal with sessions
- */
+var api         = require('../api')
+var debug       = require('debug')('odin-api:routes:session')
+var express     = require('express')
 
-var debug     = require('debug')('odin-api:routes:session');
-var express   = require('express');
-var session   = require('../controllers/session');  
+var router = express.Router()
 
-var router = express.Router();
+router.post('/execute', api.http(api.session.execute))
 
-debug("Adding POST /execute route");
-router.post('/execute', session.execute);
-
-debug('Session router exported');
-module.exports = router;
+debug('Session router exported')
+module.exports = router

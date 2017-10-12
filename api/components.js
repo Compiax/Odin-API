@@ -28,6 +28,11 @@ let destroy = [
     controllers.components.destroy
 ]
 
-module.exports = { create, read, update, browse, destroy }
+let getByUser = [
+    controllers.components.getByUser,
+    controllers.components.buildResponse
+]
+
+module.exports = { create, read, update, browse, destroy, getByUser }
 debug("Exported components API")
 

@@ -12,6 +12,7 @@ router.patch('/:projectID', api.http(api.projects.update))
 router.patch('/:projectID/save', api.http(api.projects.save))
 router.post('/:projectID/execute', api.http(api.projects.execute))
 router.post('/', api.http(api.projects.create))
+router.post('/:UserID', api.http(api.projects.create))
 
 debug('Projects router exported')
 module.exports = router

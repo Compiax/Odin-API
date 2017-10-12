@@ -28,6 +28,7 @@ let destroy = [
     controllers.projects.destroy
 ]
 
+<<<<<<< HEAD
 let save = [
     controllers.projects.find,
     controllers.projects.check,
@@ -55,4 +56,12 @@ let exportProject = [
 ]
 
 module.exports = { browse, read, update, destroy, create, exportProject, save, execute }
+=======
+let getByUser = [
+   projects.find,
+   projects.buildResponse
+]
+
+module.exports = { browse, read, update, destroy, create, getByUser }
+>>>>>>> 433e0584fe6219cc9c58920330b88fd141d8cba9
 debug("Exported projects API")

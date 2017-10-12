@@ -17,17 +17,15 @@ var Component = new mongoose.Schema({
         required: true,
         default: ""
     },
-    stats: {
-        downloaded: {
-            type: Number,
-            required: true,
-            default: 0
-        },
-        stars: {
-            type: Number,
-            required: true,
-            default: 0
-        }
+    downloaded: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    stars: {
+        type: Number,
+        required: true,
+        default: 0
     },
     usage: {
         type: String,
@@ -61,7 +59,8 @@ Component.methods.attributes = function(cb) {
     return {
         name: this.name,
         description: this.description,
-        stats: this.stats,
+        downloaded: this.downloaded,
+        stars: this.stars,
         usage: this.usage,
         created: this.created,
         author: { 

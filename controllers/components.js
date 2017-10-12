@@ -51,8 +51,6 @@ module.exports.buildResponse = (args) => {
             response.addData('component')
                 .id(component._id)
                 .attribute(component.attributes())
-                .link({self: `/components/${component._id}`})
-                .link({author: `/components/${component.author.username}`})
         })
 
         args.data.response = response
@@ -105,6 +103,58 @@ module.exports.browse = (args) => {
             .catch(err => {
                 return reject(err)
             })
+    })
+}
+
+/**
+ * Pipeline function to add math components
+ * Requires: components
+ */
+module.exports.addBaseComponents = (args) => {
+    return new Promise((resolve, reject) => {
+        debug('Calling addBaseComponents() controller')
+
+        if (!_.has(args.data, 'components')) {
+            return reject('Missing field \'components\' in args.data')
+        }
+
+        let attributes = function() {
+            return {
+                name: this.name,
+                description: this.description,
+                author: {
+                    username: 'Math'
+                },
+                inputs: 2
+            }
+        }
+
+        args.data.components.push({
+            _id: "NoIDYet",
+            name: 'Add',
+            description: 'Adds two tensors',
+            attributes: attributes
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Subtract',
+            description: 'Subtracts two tensors',
+            attributes: attributes
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Divide',
+            description: 'Divides two tensors',
+            attributes: attributes
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Multiply',
+            description: 'Multiplies two tensors',
+            attributes: attributes
+        })
+
+        return resolve(args)        
     })
 }
 

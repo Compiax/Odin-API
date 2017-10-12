@@ -19,6 +19,7 @@ let update = [
 
 let browse = [
     controllers.components.browse,
+    controllers.components.addBaseComponents,
     controllers.components.buildResponse
 ]
 

@@ -43,6 +43,17 @@ var Component = new mongoose.Schema({
         type: ObjectId,
         ref: 'User',
         required: true
+    },
+    inputs: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    variables: {
+        type: []
+    },
+    code: {
+        type: [String]
     }
 })
 
@@ -56,7 +67,8 @@ Component.methods.attributes = function(cb) {
         author: { 
             id: this.author.id,
             username: this.author.username
-        }
+        },
+        inputs: this.inputs
     }
 }
 

@@ -4,20 +4,7 @@ var net       = require('net')
 
 var session = {}
 
-session.variables = []
-session.operations = []
-
-session.setVariables = function(variables) {
-    this.variables = variables
-    return this
-}
-
-session.setOperations = function(operations) {
-    this.operations = operations
-    return this
-}
-
-session.start = function() {
+session.start = function(variables, operations) {
     return new Promise((resolve, reject) => {
         var client = new net.Socket()
         var host = config.servers.daemon.host
@@ -27,7 +14,7 @@ session.start = function() {
         client.connect(port, host, () => {
             debug(`Connected to daemon on ${host}:${port}`)
             debug("Sending data:")
-            let data = this.variables.map(a => JSON.stringify(a)).join('\n')+'\n'+this.operations.join(';')+';';
+            let data = variables.map(a => JSON.stringify(a)).join('\n')+'\n'+operations.join(';')+';';
             client.write(data)
             debug(data)
             debug("Session sent. Awaiting result")

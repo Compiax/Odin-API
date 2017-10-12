@@ -1,32 +1,67 @@
 var auth            = require('../controllers/auth')
 var debug           = require('debug')('odin-api:api:auth')
-var projects           = require('../controllers/projects')
+var controllers     = require('../controllers')
 
 let create = [
-    projects.create,
-    projects.buildResponse
+    controllers.projects.create,
+    controllers.projects.buildResponse
 ]
 
 let browse = [
-    projects.browse,
-    projects.buildResponse
+    controllers.projects.browse,
+    controllers.projects.buildResponse
 ]
 
 let read = [
-    projects.find,
-    projects.buildResponse
+    controllers.projects.find,
+    controllers.projects.buildResponse
 ]
 
 let update = [
-    projects.find,
-    projects.update,
-    projects.buildResponse
+    controllers.projects.find,
+    controllers.projects.update,
+    controllers.projects.buildResponse
 ]
 
 let destroy = [
-    projects.find,
-    projects.destroy
+    controllers.projects.find,
+    controllers.projects.destroy
 ]
 
-module.exports = { browse, read, update, destroy, create }
+<<<<<<< HEAD
+let save = [
+    controllers.projects.find,
+    controllers.projects.check,
+    controllers.projects.save,
+    controllers.projects.buildResponse
+]
+
+let execute = [
+    controllers.projects.find,
+    controllers.projects.check,
+    controllers.projects.build,
+    controllers.projects.getVariables,
+    controllers.projects.getOperations,
+    controllers.projects.execute
+]
+
+let exportProject = [
+    controllers.projects.find,
+    controllers.projects.check,
+    controllers.projects.build,
+    controllers.projects.getVariables,
+    controllers.projects.getOperations,
+    controllers.projects.generateComponent,
+    controllers.projects.buildResponse
+]
+
+module.exports = { browse, read, update, destroy, create, exportProject, save, execute }
+=======
+let getByUser = [
+   projects.find,
+   projects.buildResponse
+]
+
+module.exports = { browse, read, update, destroy, create, getByUser }
+>>>>>>> 433e0584fe6219cc9c58920330b88fd141d8cba9
 debug("Exported projects API")

@@ -263,6 +263,15 @@ module.exports.build = (args) => {
             }
         })
 
+        for (node of args.data.nodes) {
+            if (node.variable && args.data.dimensions == null) {
+                debug('using ' + args.data.dimensions)
+                args.data.dimensions = node.variable.dimensions
+                args.data.values = node.variable.values
+                break
+            }
+        }
+
         let dict = {}
         args.data.nodes.forEach(n => dict[n.id] = n)
         
@@ -296,10 +305,10 @@ module.exports.getVariables = (args) => {
             }
             args.data.variables.push({ 
                 name: node.variable.name, 
-                dimensions: node.variable.dimensions || [2,2], 
-                values: node.variable.values || [1,1,1,1], 
+                dimensions: node.variable.dimensions || args.data.dimensions, 
+                values: node.variable.values || args.data.values, 
                 save: 0, 
-                rank: 2 
+                rank: (node.variable.dimensions || args.data.dimensions).length
             })
         }
         args.data.numInputs = numInputs - 1

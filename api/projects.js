@@ -30,7 +30,6 @@ let destroy = [
 
 let save = [
     controllers.projects.find,
-    controllers.projects.check,
     controllers.projects.save,
     controllers.projects.buildResponse
 ]

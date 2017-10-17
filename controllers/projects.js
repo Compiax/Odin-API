@@ -58,7 +58,6 @@ module.exports.buildResponse = (args) => {
                 .id(project._id)
                 .attribute(project.attributes())
                 .link({self: `/projects/${project._id}`})
-                // .link({author: `/projects/${project.owner.username}`})
         })
 
         args.data.response = response
@@ -174,7 +173,7 @@ module.exports.generateComponent = (args) => {
                 return reject(`Missing field '${key}' in args.data`)
             }
         })
-        debug(args.data.project)
+
         let component = new Component({
             name: args.data.project.name,
             description: args.data.project.description || '@todo: fill in',
@@ -189,7 +188,7 @@ module.exports.generateComponent = (args) => {
             created: new Date(),
             inputs: args.data.numInputs
         })
-        debug(args.data.code)
+
         component.save()
             .then(component => {
                 debug(component)
@@ -227,8 +226,6 @@ module.exports.check = (args) => {
             return reject(new IncorrectStructureError('There needs to be an output node'))
         }
 
-        // Could probably check more but whatever
-
         resolve(args)
     })    
 }
@@ -265,7 +262,6 @@ module.exports.build = (args) => {
 
         for (node of args.data.nodes) {
             if (node.variable && args.data.dimensions == null) {
-                debug('using ' + args.data.dimensions)
                 args.data.dimensions = node.variable.dimensions
                 args.data.values = node.variable.values
                 break
@@ -277,7 +273,6 @@ module.exports.build = (args) => {
         
         args.data.tree = []
         dfs(args.data.outputNode, dict, args.data.tree)
-        debug(args.data.tree)
         resolve(args)
     })    
 }
@@ -335,7 +330,6 @@ module.exports.getOperations = (args) => {
                         code.push(`MUL ${parentVars[0]} ${parentVars[1]} ${node.variable.name}`)
                         return go()
                     } else {
-                        debug('Found custom component ' + node.component.id)
                         Component.findById(node.component.id)
                         .then(component => {
                             if (component == null) {
@@ -345,7 +339,6 @@ module.exports.getOperations = (args) => {
                             
                             // Generate embedded code
                             let theCode = component.code;
-                            debug(theCode)
                             theCode = theCode.map(line => {
                                 let newLine = line.split(' ')
                                 let op = newLine.shift()
@@ -362,7 +355,6 @@ module.exports.getOperations = (args) => {
                                 return op + ' ' + newLine.join(' ');
                             })
                             code.push(...theCode)
-                            debug(theCode)
 
                             let newVariables = component.variables.filter(v => (!v.name.includes('input') && v.name !== 'result'))
                                 .map(v => {
@@ -372,7 +364,6 @@ module.exports.getOperations = (args) => {
                             args.data.variables.push(...newVariables)
                             
                             // Generate embedded variables
-                            debug(args.data.variables)
                             return go()
                         })
                         .catch(err => {
@@ -382,20 +373,6 @@ module.exports.getOperations = (args) => {
                 } else {
                     return go();
                 }
-                /*else {
-                    // debug(`Unknown component ${node.author.username}/${node.component}`)
-                    Component.findOne({name: node.component})
-                    .then(component => {
-                        let id = shortid.generate()
-                        code.push(...generateEmbeddedCode(id, component, parentVars, node.var.name))
-                        variables.push(...alterEmbeddedVariables(id, component, variables))
-                        debug('finished ' + node.component)
-                        return go()
-                    })
-                    .catch(err => {
-                        debug(err)
-                    })
-                }*/
             })
         }})
         queue(p).then(() => {
@@ -409,7 +386,6 @@ module.exports.execute = (args) => {
     return new Promise((resolve, reject) => {
         session.start(args.data.variables, args.data.code)
         .then((answer) => {
-            debug(answer)
             args.data.response = answer;
             resolve(args)
         })
@@ -426,7 +402,6 @@ function dfs(node, nodes, list) {
     node.child = nodes[node.child]
     if (node.parents && node.parents.length > 0) {
         for (parent of node.parents) {
-            // if (parent.type === 'Component') list.push(parent)
             dfs(parent, nodes, list)
         }
         if (node.type === 'Component') list.push(node)

@@ -101,7 +101,7 @@ module.exports.browse = (args) => {
     return new Promise((resolve, reject) => { 
         debug("Calling browse() controller")
 
-        Project.find()
+        Project.find({owner: args.options.user._id})
             .populate('owner')
             .then(projects => {
                 args.data.projects = projects

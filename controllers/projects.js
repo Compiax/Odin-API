@@ -260,7 +260,10 @@ module.exports.build = (args) => {
             }
         })
 
-        console.log(args.data.nodes)
+        args.data.nodes.forEach(node => {
+            if (node.variable != undefined) { console.log(node.variable.values + " " + node.id) }
+            
+        })
 
         for (node of args.data.nodes) {
             if (node.variable && args.data.dimensions == null) {
@@ -301,10 +304,11 @@ module.exports.getVariables = (args) => {
                 }
             } else if (node.child && node.child.type === 'Output') {
                 node.variable = {name: 'result'}
+            } else if (node.type == 'Constant') {
+                node.variable.name = shortid.generate();
             } else {
                 node.variable = {name: shortid.generate()}
             }
-            debug(node.variable)
             args.data.variables.push({
                 name: node.variable.name,
                 dimensions: node.variable.dimensions || args.data.dimensions,

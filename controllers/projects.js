@@ -296,7 +296,6 @@ module.exports.getVariables = (args) => {
         shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#')
         const nodes = args.data.nodes
         for (node of nodes) {
-            debug(node);
             if (node.type == 'Input') {
                 if (node.child && node.child.type === 'Output') {
                     node.variable = {name: 'result'}
@@ -310,7 +309,6 @@ module.exports.getVariables = (args) => {
             } else {
                 node.variable = {name: shortid.generate()}
             }
-            debug(node)
             args.data.variables.push({
                 name: node.variable.name,
                 dimensions: node.variable.dimensions || args.data.dimensions,

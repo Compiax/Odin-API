@@ -297,7 +297,7 @@ module.exports.getVariables = (args) => {
         const nodes = args.data.nodes
         for (node of nodes) {
             debug(node);
-            if (node.type == 'Input' || node.type == 'Constant') {
+            if (node.type == 'Input') {
                 if (node.child && node.child.type === 'Output') {
                     node.variable = {name: 'result'}
                 } else {

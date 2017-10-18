@@ -24,6 +24,7 @@ session.start = function(variables, operations) {
             debug('Received result:')
             debug(String(data))
             resolve(String(data))
+            client.write("QUIT")
             client.destroy() // kill client after server's response
         })
       

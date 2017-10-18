@@ -166,7 +166,7 @@ module.exports.destroy = (args) => {
 * Requires: project
 */
 module.exports.generateComponent = (args) => {
-    return new Promise((resolve, reject) => { 
+    return new Promise((resolve, reject) => {
         debug('Calling generateComponent()')
         _.forEach(['project', 'code', 'variables', 'numInputs'], key => {
             if (!_.has(args.data, key)) {
@@ -260,6 +260,8 @@ module.exports.build = (args) => {
             }
         })
 
+        console.log(args.data.nodes)
+
         for (node of args.data.nodes) {
             if (node.variable && args.data.dimensions == null) {
                 args.data.dimensions = node.variable.dimensions
@@ -291,18 +293,23 @@ module.exports.getVariables = (args) => {
         shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#')
         const nodes = args.data.nodes
         for (node of nodes) {
-            if (node.variable) {
-                node.variable.name = `input-${numInputs++}`;
+            if (node.type == 'Input') {
+                if (node.child && node.child.type === 'Output') {
+                    node.variable = {name: 'result'}
+                } else {
+                    node.variable.name = `input-${numInputs++}`;
+                }
             } else if (node.child && node.child.type === 'Output') {
                 node.variable = {name: 'result'}
             } else {
                 node.variable = {name: shortid.generate()}
             }
-            args.data.variables.push({ 
-                name: node.variable.name, 
-                dimensions: node.variable.dimensions || args.data.dimensions, 
-                values: node.variable.values || args.data.values, 
-                save: 0, 
+            debug(node.variable)
+            args.data.variables.push({
+                name: node.variable.name,
+                dimensions: node.variable.dimensions || args.data.dimensions,
+                values: node.variable.values || args.data.values,
+                save: 0,
                 rank: (node.variable.dimensions || args.data.dimensions).length
             })
         }
@@ -375,10 +382,15 @@ module.exports.getOperations = (args) => {
                 }
             })
         }})
-        queue(p).then(() => {
-            args.data.code = code
-            return resolve(args)
-        })
+        if (p.length > 0) {
+            queue(p).then(() => {
+                args.data.code = code
+                return resolve(args)
+            })
+        } else {
+            args.data.code = [];
+            return resolve(args);
+        }
     });
 }
 

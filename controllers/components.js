@@ -133,25 +133,136 @@ module.exports.addBaseComponents = (args) => {
             _id: "NoIDYet",
             name: 'Add',
             description: 'Adds two tensors',
-            attributes: attributes
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 2
+                }
+            }
         },
         {
             _id: "NoIDYet",
             name: 'Subtract',
             description: 'Subtracts two tensors',
-            attributes: attributes
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 2
+                }
+            }
         },
         {
             _id: "NoIDYet",
             name: 'Divide',
             description: 'Divides two tensors',
-            attributes: attributes
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 2
+                }
+            }
         },
         {
             _id: "NoIDYet",
-            name: 'Multiply',
+            name: 'Scalar Multiply',
             description: 'Multiplies two tensors',
-            attributes: attributes
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 2
+                }
+            }
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Absolute',
+            description: 'Absolute value of all values',
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 1
+                }
+            }
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Transpose',
+            description: 'Transposes the tensor',
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 1
+                }
+            }
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Sin',
+            description: 'Transposes the tensor',
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 1
+                }
+            }
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Cos',
+            description: 'Transposes the tensor',
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 1
+                }
+            }
+        },
+        {
+            _id: "NoIDYet",
+            name: 'Square Root',
+            description: 'Transposes the tensor',
+            attributes: function() {
+                return {
+                    name: this.name,
+                    description: this.description,
+                    author: {
+                        username: 'Math'
+                    },
+                    inputs: 1
+                }
+            }
         })
 
         return resolve(args)        

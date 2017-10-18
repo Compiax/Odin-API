@@ -318,6 +318,7 @@ module.exports.getOperations = (args) => {
         let p = args.data.tree.map((node) => {
             return () => {
             return new Promise((go, stop) => {
+                debug('getOperations')
                 if (node.type == 'Component') {
                     let parentVars = node.parents.map(p => p.variable.name)
                     if (node.component.name === "Add") {
@@ -326,8 +327,26 @@ module.exports.getOperations = (args) => {
                     } else if (node.component.name === "Subtract") {
                         code.push(`SUB ${parentVars[0]} ${parentVars[1]} ${node.variable.name}`)
                         return go()
-                    } else if (node.component.name === "Multiply") {
+                    } else if (node.component.name === "Scalar Multiply") {
                         code.push(`MUL ${parentVars[0]} ${parentVars[1]} ${node.variable.name}`)
+                        return go()
+                    } else if (node.component.name === "Divide") {
+                        code.push(`DIV ${parentVars[0]} ${parentVars[1]} ${node.variable.name}`)
+                        return go()
+                    } else if (node.component.name === "Absolute") {
+                        code.push(`ABS ${parentVars[0]} ${node.variable.name}`)
+                        return go()
+                    } else if (node.component.name === "Transpose") {
+                        code.push(`TRANSPOSE ${parentVars[0]} ${node.variable.name}`)
+                        return go()
+                    } else if (node.component.name === "Sin") {
+                        code.push(`SIN ${parentVars[0]} ${node.variable.name}`)
+                        return go()
+                    } else if (node.component.name === "Cos") {
+                        code.push(`COS ${parentVars[0]} ${node.variable.name}`)
+                        return go()
+                    } else if (node.component.name === "Square Root") {
+                        code.push(`SQRT ${parentVars[0]} ${node.variable.name}`)
                         return go()
                     } else {
                         Component.findById(node.component.id)
@@ -410,8 +429,10 @@ function dfs(node, nodes, list) {
 
 function queue(all) {
     return new Promise((resolve, reject) => {
+        debug('QUEUE')
         next(all.shift())        
         function next(go) {
+            if (go == undefined) { return resolve() }
             go()
             .then(res => {
                 if (all.length == 0) {

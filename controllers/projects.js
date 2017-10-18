@@ -305,6 +305,8 @@ module.exports.getVariables = (args) => {
                 }
             } else if (node.child && node.child.type === 'Output') {
                 node.variable = {name: 'result'}
+            } else if (node.type == 'Constant') {
+                node.variable.name = shortid.generate();
             } else {
                 node.variable = {name: shortid.generate()}
             }

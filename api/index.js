@@ -4,7 +4,6 @@ var Pipeline    = require('../utils/pipeline.js')
 var users       = require('./users')
 var components  = require('./components')
 var projects    = require('./projects')
-var session     = require('./session')
 
 var http = controllers => {
     return (req, res, next) => {
@@ -18,4 +17,4 @@ var http = controllers => {
     }
 }
 
-module.exports = { auth, projects, http, users, components, session }
+module.exports = { auth, projects, http, users, components }

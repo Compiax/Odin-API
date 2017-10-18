@@ -33,6 +33,11 @@ let getByUser = [
     controllers.components.buildResponse
 ]
 
-module.exports = { create, read, update, browse, destroy, getByUser }
+let search = [
+    controllers.components.search,
+    controllers.components.buildResponse
+]
+
+module.exports = { create, read, update, browse, destroy, getByUser, search }
 debug("Exported components API")
 

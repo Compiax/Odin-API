@@ -182,6 +182,8 @@ module.exports.update = (args) => {
     })
 }
 
+
+
 /**
 * Pipeline function to delete a component
 * Requires: component
@@ -204,9 +206,12 @@ module.exports.destroy = (args) => {
         })
     })
 }
+
+
 /**
 * Pipeline function to retrieve user components
 * Requires:UserID
+* Returns all components owned by user with UserID
 */
 
  module.exports.getByUser = (args) => {
@@ -216,14 +221,43 @@ module.exports.destroy = (args) => {
          if (!_.has(args.data, 'userID')) 
             return reject('Missing userID in args.data')
 
-        Component.find({author: {$elemMatch: {ObjectID:userID.toString()}}}, function(err, components){
-          if(!components)  return reject(new ComponentNotFoundError())
-
+        Component.find({author: {$elemMatch: {ObjectID : args.data.userID.toString()}}})
+            .populate('author')
+            .then( components => {
                 args.data.components = components
                 return resolve(args)
-          })  
+            })
         .catch(err => {
             return reject(err)
         })
     })
 }
+
+
+
+/**
+* Pipeline function search for components (exported projects)
+* Requires: Search String
+* Returns all components with attributes to match the search string
+*/
+
+ module.exports.search = (args) => {
+    return new Promise((resolve, reject) => { 
+        debug("Calling search() controller")
+       
+         if (!_.has(args.data, 'searchString')) 
+            return reject('Missing searchString in args.data')
+            
+        Component.createIndex({ "$**" : "text" })
+        Component.find({ $text: { $search: args.data.searchString.toString()}})
+            .populate('author')
+            .then(components => {
+                args.data.components = components
+                return resolve(args)
+            }) 
+        .catch(err => {
+            return reject(err)
+        })
+    })
+}
+

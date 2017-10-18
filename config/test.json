@@ -1,0 +1,31 @@
+{
+  "cors": {
+    "origin": "*",
+    "credentials": true,
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS"
+    ]
+  },
+  "session": {
+    "secret": "odin-session-secret-test"
+  },
+  "servers": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 8000
+    },
+    "db": {
+      "host": "127.0.0.1",
+      "database": "odin"
+    },
+    "http": {
+      "host": "https://127.0.0.1",
+      "port": "3000"
+    }
+  }
+}

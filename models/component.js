@@ -1,0 +1,75 @@
+
+var debug       = require('debug')('odin-api:models:component')
+var mongoose    = require('mongoose')
+
+debug('Initialising model: Component')
+
+var ObjectId    = mongoose.Schema.Types.ObjectId
+
+debug('Defining schema: Component')
+var Component = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true,
+        default: ""
+    },
+    downloaded: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    stars: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    usage: {
+        type: String,
+        default: "",
+        required: true
+    },
+    created: {
+        required: true,
+        type: Date,
+        default: new Date()
+    },
+    author: {
+        type: ObjectId,
+        ref: 'User',
+        required: true
+    },
+    inputs: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    variables: {
+        type: []
+    },
+    code: {
+        type: [String]
+    }
+})
+
+Component.methods.attributes = function(cb) {
+    return {
+        name: this.name,
+        description: this.description,
+        downloaded: this.downloaded,
+        stars: this.stars,
+        usage: this.usage,
+        created: this.created,
+        author: { 
+            id: this.author.id,
+            username: this.author.username
+        },
+        inputs: this.inputs
+    }
+}
+
+debug('Component model exported')
+module.exports = mongoose.model('Component', Component)

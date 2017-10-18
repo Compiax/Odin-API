@@ -1,16 +1,9 @@
 var _         = require('lodash');
 var app       = require('./app');
-var config    = require('../config/development');
+var config    = require('config');
 var debug     = require('debug')('odin-api:core');
 
-/**
-  * Class PropertySyncApi
-  *  - Property server (http node server)
-  *  - Property app (express app)
-  *  - Config (config module, for global access)
-  *  - Globals (reference to shared instances)
-  * @param Object _config Config to override defaults from config files.
-  */
+
 var OdinAPI = function() {
     this.app = null;
 
@@ -24,10 +17,11 @@ var OdinAPI = function() {
      * Construct server.
      */
     debug('Creating server');
-    var port = config.port;
-
+    var host = config.servers.http.host;
+    var port = config.servers.http.port;
+    
     this.app.listen(port, function(){
-        debug('Listening on http://localhost:' + port);
+      debug(`Listening on ${host}:${port}`);
     });
 };
 
